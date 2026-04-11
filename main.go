@@ -2,9 +2,8 @@ package main
 
 import (
 	"bufio"
-	"encoding/binary"
+	// "encoding/binary"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"runtime"
@@ -22,7 +21,7 @@ import (
  * Checkk whether
  */
  
-var INTRO string = "==============================================\n ERROR PIPE STARTED \n============================================== " 
+var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n============================================== " 
  
 func main(){
 	scanner := bufio.NewScanner(os.Stdin)
@@ -57,8 +56,15 @@ func main(){
 func runCmd(input string) bool{
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
-		cmd = exec.Command("cmd", "/C", input)
-	}else{
+		_, err := exec.Command("Rename-Item").Output()
+		if err != nil{
+			cmd = exec.Command("cmd", "/C", input)
+			fmt.Println("Cmd")
+		}else{
+			cmd = exec.Command("powershell", "-c", input)
+			fmt.Println("Power!1")
+		}
+	} else{ //Macos & Linux
 		cmd = exec.Command("sh", "-c", input)
 	}
 	
@@ -73,28 +79,28 @@ func runCmd(input string) bool{
 	return false
 }
 
-func getErrcode() int{
-	if runtime.GOOS == "windows"{
-		log.Println("Windows")
-		code, err := exec.Command("echo %errorlevel%").Output()
-		if err != nil{
-			log.Println(err)
-		}
-		return int(binary.BigEndian.Uint64(code))
-	}else{ // For linux and Macos
-		code, err := exec.Command("$?").Output()
-		if err != nil{
-			log.Println(err)
-		}
-		return int(binary.BigEndian.Uint64(code))
-	}
-}
+// func getErrcode() int{
+// 	if runtime.GOOS == "windows"{
+// 		log.Println("Windows")
+// 		code, err := exec.Command("echo %errorlevel%").Output()
+// 		if err != nil{
+// 			log.Println(err)
+// 		}
+// 		return int(binary.BigEndian.Uint64(code))
+// 	}else{ // For linux and Macos
+// 		code, err := exec.Command("$?").Output()
+// 		if err != nil{
+// 			log.Println(err)
+// 		}
+// 		return int(binary.BigEndian.Uint64(code))
+// 	}
+// }
 
-func checkCode(code int) bool{
-	if code == 0{
-		return false
-	}else{
-		return true
-	}
-}
+// func checkCode(code int) bool{
+// 	if code == 0{
+// 		return false
+// 	}else{
+// 		return true
+// 	}
+// }
 
