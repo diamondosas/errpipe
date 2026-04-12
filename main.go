@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"flag"
 )
 
 /* How the Applcication Runs
@@ -24,6 +25,8 @@ import (
 var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n============================================== " 
  
 func main(){
+	initFlags()
+	
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println(INTRO)
 	
@@ -53,6 +56,10 @@ func main(){
 	}	
 }
 
+func initFlags(){
+	flag.String("help", "", "To print out Help Command")
+	flag.Parse()
+}
 func runCmd(input string) bool{
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
@@ -78,6 +85,7 @@ func runCmd(input string) bool{
 	}
 	return false
 }
+
 
 // func getErrcode() int{
 // 	if runtime.GOOS == "windows"{
