@@ -58,12 +58,13 @@ func main(){
 
 func initFlags(){
 	flag.String("help", "", "Print out Help Command")
-	init := flag.Bool("init", false,"Setup the Application")
-	switch{
-		case *init:
+	init := flag.String("init", "NIL" ,"Setup the Application")	
+	flag.Parse()
+	
+	switch *init{
+		case "":
 			initApp()
 	}
-	flag.Parse()
 }
 func runCmd(input string) bool{
 	var cmd *exec.Cmd
