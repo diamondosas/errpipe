@@ -69,13 +69,13 @@ func initFlags(){
 func runCmd(input string) bool{
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
-		_, err := exec.Command("Rename-Item").Output()
+		_, err := exec.LookPath("powershell")
 		if err != nil{ 
 			cmd = exec.Command("cmd", "/C", input)
 			fmt.Println("Cmd")
 		}else{ 
 			cmd = exec.Command("powershell", "-c", input)
-			fmt.Println("Power!1")
+			fmt.Println("Power")
 		}
 	} else{ //Macos & Linux
 		cmd = exec.Command("sh", "-c", input)
