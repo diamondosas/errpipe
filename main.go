@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	// "encoding/binary"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
-	"flag"
 )
 
 /* How the Applcication Runs
@@ -22,7 +22,7 @@ import (
  * Checkk whether
  */
  
-var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n============================================== " 
+var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
  
 func main(){
 	initFlags()
@@ -57,17 +57,22 @@ func main(){
 }
 
 func initFlags(){
-	flag.String("help", "", "To print out Help Command")
+	flag.String("help", "", "Print out Help Command")
+	init := flag.Bool("init", false,"Setup the Application")
+	switch{
+		case *init:
+			initApp()
+	}
 	flag.Parse()
 }
 func runCmd(input string) bool{
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
 		_, err := exec.Command("Rename-Item").Output()
-		if err != nil{
+		if err != nil{ 
 			cmd = exec.Command("cmd", "/C", input)
 			fmt.Println("Cmd")
-		}else{
+		}else{ 
 			cmd = exec.Command("powershell", "-c", input)
 			fmt.Println("Power!1")
 		}
@@ -86,7 +91,10 @@ func runCmd(input string) bool{
 	return false
 }
 
-
+func initApp() {
+	fmt.Println("Initiaised")
+	//Set Methods 
+}
 // func getErrcode() int{
 // 	if runtime.GOOS == "windows"{
 // 		log.Println("Windows")
