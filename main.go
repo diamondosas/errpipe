@@ -26,8 +26,9 @@ import (
 var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
  
 func main(){
-	ok := initFlags()
 	
+	ok := initFlags()
+	startPython()
 	if ok{
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Println(INTRO)
@@ -113,6 +114,12 @@ func printHelp(){
 	fmt.Println("-- To initialise or setup the AI")
 }
 
+func startPython(){
+	err := exec.Command("python ").Run()
+	if err != nil{
+		fmt.Println(err)
+	}
+}
 // func getErrcode() int{
 // 	if runtime.GOOS == "windows"{
 // 		log.Println("Windows")
