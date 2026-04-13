@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	
 )
 
 /* How the Applcication Runs
@@ -25,51 +26,55 @@ import (
 var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
  
 func main(){
-	initFlags()
+	ok := initFlags()
 	
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println(INTRO)
+	if ok{
+		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Println(INTRO)
+		
+		
+		for{
+			dir, err := os.Getwd()
+			if err != nil{
+				dir = "UnknownDIR"
+			}
+			fmt.Print("[EP] " + dir + ">")
+			
+			if !scanner.Scan(){
+				break
+			}
+			input := strings.TrimSpace(scanner.Text())
+			
+			if input == ""{
+				continue
+			}else if input == "exit"{
+				break
+			}
+			_, ok := runCmd(input)
+			if ok{
+				fmt.Println("Opening AI")
+			}
+			
+		}
+	}
 	
-	
-	for{
-		dir, err := os.Getwd()
-		if err != nil{
-			dir = "UnknownDIR"
-		}
-		fmt.Print("[EP] " + dir + ">")
-		
-		if !scanner.Scan(){
-			break
-		}
-		input := strings.TrimSpace(scanner.Text())
-		
-		if input == ""{
-			continue
-		}else if input == "exit"{
-			break
-		}
-		ok := runCmd(input)
-		if ok{
-			fmt.Println("Opening AI")
-		}
-		
-	}	
 }
 
-func initFlags(){
+func initFlags() bool{
 	flag.String("help", "", "Print out Help Command")
-	init := flag.String("init", "NIL" ,"Setup the Application")	
+	init := flag.Bool("init", false ,"Setup the Application")	
 	flag.Parse()
 	
-	switch *init{
-		case "":
-			initApp()
+	if *init{
+		initApp()
+		return false
 	}
+	return true
 }
-func runCmd(input string) bool{
+func runCmd(input string) (string, bool) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
-		_, err := exec.LookPath("powershell")
+		err := exec.Command("powershell", "-command", "$PSVersionTable").Run()
 		if err != nil{ 
 			cmd = exec.Command("cmd", "/C", input)
 			fmt.Println("Cmd")
@@ -87,9 +92,9 @@ func runCmd(input string) bool{
 	
 	err := cmd.Run()
 	if err != nil{
-		return true
+		return err.Error(), true
 	}
-	return false
+	return err.Error(), false //idk the value of err null
 }
 
 func initApp() {
