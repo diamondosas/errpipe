@@ -20,7 +20,7 @@ import (
  */
 
 /* PROCESS
- * Checkk whether
+ * Check whether
  */
  
 var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
@@ -50,9 +50,9 @@ func main(){
 			}else if input == "exit"{
 				break
 			}
-			_, ok := runCmd(input)
+			error, ok := runCmd(input)
 			if ok{
-				fmt.Println("Opening AI")
+				openAI(error)
 			}
 			
 		}
@@ -61,14 +61,18 @@ func main(){
 }
 
 func initFlags() bool{
-	flag.String("help", "", "Print out Help Command")
+	help := flag.Bool("help", false, "Print out Help Command")
 	init := flag.Bool("init", false ,"Setup the Application")	
 	flag.Parse()
-	
+	if *help{
+		printHelp()
+		return false
+	}
 	if *init{
 		initApp()
 		return false
 	}
+	
 	return true
 }
 func runCmd(input string) (string, bool) {
@@ -91,16 +95,24 @@ func runCmd(input string) (string, bool) {
 	cmd.Stdin = os.Stdin
 	
 	err := cmd.Run()
+	error := fmt.Sprint(err)
 	if err != nil{
-		return err.Error(), true
+		return error, true
 	}
-	return err.Error(), false //idk the value of err null
+	return "", false //idk the value of err null
 }
 
 func initApp() {
 	fmt.Println("Initiaised")
 	//Set Methods 
 }
+
+func printHelp(){
+	fmt.Println("Error Pipe Help ")
+	fmt.Println(" --help To show the help message ")
+	fmt.Println("-- To initialise or setup the AI")
+}
+
 // func getErrcode() int{
 // 	if runtime.GOOS == "windows"{
 // 		log.Println("Windows")
