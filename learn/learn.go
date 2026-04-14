@@ -1,67 +1,37 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"os/exec"
 	"strings"
+	"time"
+
+	"github.com/go-vgo/robotgo"
 )
 
-func greetUser(name string, upper bool) {
-	msg := "Hello, " + name + "!"
-	if upper {
-		msg = strings.ToUpper(msg)
-	}
-	fmt.Println(msg)
-}
-
-func addNumbers(a, b int) {
-	fmt.Printf("%d + %d = %d\n", a, b, a+b)
-}
-
-func repeatText(text string, times int) {
-	for i := 0; i < times; i++ {
-		fmt.Println(text)
-	}
-}
-
 func main() {
-	// --- Define flags ---
-	// String flag
-	name := flag.String("name", "World", "Name to greet")
-
-	// Bool flag
-	upper := flag.Bool("upper", false, "Uppercase the greeting")
-
-	// Int flags
-	numA := flag.Int("a", 0, "First number")
-	numB := flag.Int("b", 0, "Second number")
-
-	// Repeat flags																								
-	text  := flag.String("text", "", "Text to repeat")
-	times := flag.Int("times", 1, "How many times to repeat")
-
-	// Mode flag — used to pick which function to run
-	mode := flag.String("mode", "greet", "Mode: greet | add | repeat")
-
-	flag.Parse()
-
-	// --- Trigger different functions based on -mode ---
-	switch *mode {
-	case "greet":
-		greetUser(*name, *upper)
-
-	case "add":
-		addNumbers(*numA, *numB)
-
-	case "repeat":
-		if *text == "" {
-			fmt.Println("Error: -text is required in repeat mode")
-			return
-		}
-		repeatText(*text, *times)
-
-	default:
-		fmt.Printf("Unknown mode: %q\n", *mode)
-		fmt.Println("Available modes: greet | add | repeat")
+	// 1. Run the command and capture the text
+	// We run 'cmd /C echo Hello World' to get the output on Windows
+	cmd := exec.Command("cmd", "/C", "echo Hello World")
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error running command:", err)
+		return
 	}
+
+	// Clean up the output text
+	capturedText := strings.TrimSpace(string(out))
+	fmt.Printf("I captured this message: %s\n", capturedText)
+
+	// 2. Open a second terminal window
+	// 'start cmd' tells Windows to launch a new terminal window
+	exec.Command("cmd", "/C", "start", "cmd").Run()
+
+	// 3. Wait for the window to appear and focus
+	time.Sleep(2 * time.Second)
+
+	// 4. Automatically type the text into the new window
+	message := "echo The first terminal sent this: " + capturedText
+	robotgo.TypeStr(message)
+	robotgo.KeyTap("enter")
 }

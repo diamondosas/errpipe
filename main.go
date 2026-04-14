@@ -40,7 +40,7 @@ func main(){
 				dir = "UnknownDIR"
 			}
 			fmt.Print("[EP] " + dir + ">")
-			
+			 	
 			if !scanner.Scan(){
 				break
 			}
