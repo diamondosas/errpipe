@@ -2,7 +2,10 @@ module errpipe
 
 go 1.25.0
 
-require github.com/go-vgo/robotgo v1.0.2
+require (
+	github.com/go-vgo/robotgo v1.0.2
+	github.com/shirou/gopsutil/v3 v3.24.5
+)
 
 require (
 	github.com/dblohm7/wingoes v0.0.0-20250822163801-6d8e6105c62d // indirect
@@ -16,6 +19,7 @@ require (
 	github.com/otiai10/gosseract/v2 v2.4.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.2 // indirect
+	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/tailscale/win v0.0.0-20250627215312-f4da2b8ee071 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
