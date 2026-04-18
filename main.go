@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
-	
+	// "errors"
 )
 
 /* How the Applcication Runs
@@ -52,8 +52,10 @@ func main(){
 				break
 			}
 			error, ok := runCmd(input)
+			// errmsg := err.Error()
 			if ok{
-				openAI(error)
+				sendtoAI(error)
+				
 			}
 			
 		}

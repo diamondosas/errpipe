@@ -1,11 +1,11 @@
-package main 
+package main
+
 import (
+	"errpipe/ai/gemini"
 	"fmt"
 )
-func openAI(error string){
 
-}
-
-func sendtoAI(){
-	
+func sendtoAI(errormsg string){
+	fmt.Println("Sending Error to AI")
+	gemini.GeminiCli(errormsg)
 }
