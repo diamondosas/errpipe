@@ -55,30 +55,38 @@ func getWindowThreadProcessId(hwnd syscall.Handle) (int, error) {
 }
 
 func findWindow(pid int) (syscall.Handle, error) {
-	fmt.Printf("DEBUG: findWindow searching for PID: %d\n", pid)
-	var hwnd syscall.Handle
-	cb := syscall.NewCallback(func(h syscall.Handle, p uintptr) uintptr {
-		wpid, _ := getWindowThreadProcessId(h)
-		if wpid == pid {
-			isVisible, _, _ := procIsWindowVisible.Call(uintptr(h))
-			gwOwner := uintptr(4)
-			isOwned, _, _ := procGetWindow.Call(uintptr(h), gwOwner)
-			
-			fmt.Printf("DEBUG: Found window HWND %v for PID %d: visible=%v, owned=%v\n", h, pid, isVisible != 0, isOwned != 0)
-			
-			if isVisible != 0 && isOwned == 0 {
-				fmt.Printf("DEBUG: Identified main window HWND %v for PID %d\n", h, pid)
-				hwnd = h
-				return 0 // Stop enumerating
-			}
-		}
-		return 1 // Continue
-	})
-	enumWindows(cb, 0)
-	if hwnd == 0 {
-		return 0, fmt.Errorf("no visible main window found for pid %d", pid)
-	}
-	return hwnd, nil
+    fmt.Printf("DEBUG: findWindow searching for PID: %d\n", pid)
+    var hwnd syscall.Handle
+
+    cb := syscall.NewCallback(func(h syscall.Handle, p uintptr) uintptr {
+        wpid, _ := getWindowThreadProcessId(h)
+        if wpid == pid {
+            isVisible, _, _ := procIsWindowVisible.Call(uintptr(h))
+            gwOwner := uintptr(4)
+            isOwned, _, _ := procGetWindow.Call(uintptr(h), gwOwner)
+
+            fmt.Printf("DEBUG: Found window HWND %v for PID %d: visible=%v, owned=%v\n",
+                h, pid, isVisible != 0, isOwned != 0)
+
+            // Accept non-owned windows even if currently not visible
+            // (console windows are often hidden/minimized, not truly invisible)
+            if isOwned == 0 {
+                fmt.Printf("DEBUG: Candidate main window HWND %v for PID %d\n", h, pid)
+                hwnd = h
+                if isVisible != 0 {
+                    return 0 // Prefer a visible one — stop immediately
+                }
+                // Keep enumerating in case a visible one exists
+            }
+        }
+        return 1
+    })
+    enumWindows(cb, 0)
+
+    if hwnd == 0 {
+        return 0, fmt.Errorf("no visible main window found for pid %d", pid)
+    }
+    return hwnd, nil
 }
 
 func setForeground(h syscall.Handle) error {

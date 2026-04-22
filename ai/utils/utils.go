@@ -47,3 +47,15 @@ func IsRunning(name string) ([]int32, bool) {
 
 	return pids, len(pids) > 0
 }
+
+func GetParentPID(pid int32) int32 {
+    p, err := process.NewProcess(pid)
+    if err != nil {
+        return 0
+    }
+    ppid, err := p.Ppid()
+    if err != nil {
+        return 0
+    }
+    return ppid
+}
