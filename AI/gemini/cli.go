@@ -5,40 +5,48 @@ import (
 	"os/exec"
 	"time"
 
-	"errpipe/AI/utils"
+	"errpipe/ai/utils"
+
 	"github.com/go-vgo/robotgo"
+	
 )
 
-// GeminiCli handles interaction with the Gemini CLI tool.
 func GeminiCli(errorMessage string) {
-	// Check if Gemini CLI is installed
 	if _, ok := utils.IsInstalled("gemini"); !ok {
-		fmt.Println("Gemini Cli is not Installed Please use another AI")
+		fmt.Println("Gemini CLI is not installed")
 		return
 	}
 
-	// Check whether gemini CLI is open or not
-	if !utils.IsProcessRunning("gemini") {
-		// If it is not open we start a terminal with the parameter "gemini --prompt"
+	pids, running := utils.IsRunning("gemini")
+
+	if !running {
 		fmt.Println("Gemini CLI is not running. Starting it now...")
-		
-		// Using 'start' to open in a new window as shown in learn/learn.go
 		cmd := exec.Command("cmd", "/C", "start", "gemini", "--prompt", errorMessage)
-		err := cmd.Run()
-		if err != nil {
+		if err := cmd.Run(); err != nil {
 			fmt.Printf("Error starting Gemini CLI: %v\n", err)
 		}
-	} else {
-		// If it is open we type the error into the screen
-		fmt.Println("Gemini CLI is already running. Typing the error...")
-		  
-		// Give it a moment to be ready/focused (as in learn/learn.go)
-		time.Sleep(2 * time.Second)
-		
-		// Type the error message
-		robotgo.Type(errorMessage)
-		robotgo.KeyTap("enter")
+		return
 	}
+
+	fmt.Printf("Gemini CLI is running (PIDs: %v). Snapping window...\n", pids)
+	
+	// Iterate through all found PIDs to find the one with the main window
+	var err error
+	for _, targetPID := range pids {
+		err = utils.BringWindowToFrontByPID(int(targetPID))
+		if err == nil {
+			break
+		}
+		fmt.Printf("DEBUG: Could not bring PID %d to front, trying next...\n", targetPID)
+	}
+
+	if err != nil{
+		fmt.Println("Unable to bring any gemini process window to front")
+	}else{
+		fmt.Printf("DEBUG: Successfully brought window to front. Typing error message: %q\n", errorMessage)
+		time.Sleep(500 * time.Millisecond)
+		robotgo.Type(errorMessage)
+		// robotgo.KeyTap("enter")
+	}
+
 }
-
-

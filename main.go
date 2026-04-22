@@ -28,7 +28,7 @@ var INTRO string = "==============================================\n 	    ERROR 
 func main(){
 	
 	ok := initFlags()
-	startPython()
+	
 	if ok{
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Println(INTRO)
@@ -81,14 +81,14 @@ func initFlags() bool{
 func runCmd(input string) (string, bool) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
-		err := exec.Command("powershell", "-command", "$PSVersionTable").Run()
-		if err != nil{ 
+		// err := exec.Command("powershell", "-command", "$PSVersionTable").Run()
+		// if err != nil{ 
 			cmd = exec.Command("cmd", "/C", input)
 			fmt.Println("Cmd")
-		}else{ 
-			cmd = exec.Command("powershell", "-c", input)
-			fmt.Println("Power")
-		}
+		// }else{ 
+		// 	cmd = exec.Command("powershell", "-c", input)
+		// 	fmt.Println("Power")
+		// }
 	} else{ //Macos & Linux
 		cmd = exec.Command("sh", "-c", input)
 	}
@@ -116,12 +116,6 @@ func printHelp(){
 	fmt.Println("-- To initialise or setup the AI")
 }
 
-func startPython(){
-	err := exec.Command("python ").Run()
-	if err != nil{
-		fmt.Println(err)
-	}
-}
 // func getErrcode() int{
 // 	if runtime.GOOS == "windows"{
 // 		log.Println("Windows")
