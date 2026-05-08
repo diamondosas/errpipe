@@ -2,9 +2,11 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	// "encoding/binary"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -93,14 +95,14 @@ func runCmd(input string) (string, bool) {
 		cmd = exec.Command("sh", "-c", input)
 	}
 	
+	var stderrBuf bytes.Buffer
 	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 	cmd.Stdin = os.Stdin
 	
 	err := cmd.Run()
-	error := fmt.Sprint(err)
 	if err != nil{
-		return error, true
+		return stderrBuf.String(), true
 	}
 	return "", false //idk the value of err null
 }
@@ -113,7 +115,7 @@ func initApp() {
 func printHelp(){
 	fmt.Println("Error Pipe Help ")
 	fmt.Println(" --help To show the help message ")
-	fmt.Println("-- To initialise or setup the AI")
+	fmt.Println(" --init To initialise or setup the AI")
 }
 
 // func getErrcode() int{

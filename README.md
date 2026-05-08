@@ -1,19 +1,15 @@
 # errpipe
 
-<!-- PLACE YOUR DEMO GIF/IMAGE HERE -->
-<!-- Example: ![demo](./assets/demo.gif) -->
-
 <div align="center">
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)
-![built with](https://img.shields.io/badge/built%20with-terminal%20%E2%9D%A4-black?style=flat-square)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)
+![built with](https://img.shields.io/badge/built%20with-go%20%E2%9D%A4-00ADD8?style=flat-square)
 
-**It's 2026. Stop copy/pasting errors into ChatGPT.**
+**Stop copy/pasting errors. Let your terminal talk to AI.**
 
-[Install](#install) · [Usage](#usage) · [Config](#config) · [Contributing](#contributing)
+[Install](#install) · [Usage](#usage) · [How it Works](#how-it-works) · [Contributing](#contributing)
 
 </div>
 
@@ -21,167 +17,91 @@
 
 ## What is this
 
-Your terminal throws an error. You copy it. You open the browser. You paste it. You wait.
+`errpipe` is an interactive shell wrapper built in Go that monitors your commands. When a command fails, it automatically captures the error output and sends it to an LLM (currently Gemini) for immediate analysis and fixes.
 
-That is 4 steps too many.
-
-`errpipe` catches the error from your terminal and sends it to any LLM you want. One pipe. Done.
-
-```sh
-npm run build 2>&1 | errpipe
-```
-
-That is it.
-
----
-
-## Why
-
-- Errors are inevitable. That is just engineering.
-- Copy/paste is not a workflow. It is a tax on your time.
-- LLMs are good at this. Use them properly.
-
-> Full-time vibe coders will not enjoy this app. Errors are a normal part of building software. This tool is for engineers who know that.
+Instead of switching to your browser, `errpipe` brings the fix to you.
 
 ---
 
 ## Install
 
-**From release (recommended)**
+### From Source (Go required)
 
-Download the binary for your platform from the [Releases](../../releases) folder.
-
-```sh
-# macOS / Linux
-chmod +x errpipe
-sudo mv errpipe /usr/local/bin/
-```
+Ensure you have Go installed (1.25+ recommended).
 
 ```sh
-# Windows
-# Add the .exe to your PATH
-```
-
-**From source**
-
-```sh
-git clone https://github.com/yourusername/errpipe.git
+git clone https://github.com/DiamondOsasx/errpipe.git
 cd errpipe
-# build instructions here
+go build -o errpipe.exe
 ```
+
+Add the resulting binary to your system PATH.
 
 ---
 
 ## Usage
 
-Pipe any stderr output directly into `errpipe`.
+Simply run `errpipe` to start the interactive session.
 
 ```sh
-# Basic
-python app.py 2>&1 | errpipe
-
-# Specific command
-cargo build 2>&1 | errpipe
-
-# Save the fix to a file
-npm test 2>&1 | errpipe --output fix.md
+errpipe
 ```
 
----
-
-## Config
-
-Set your LLM of choice. `errpipe` does not pick one for you.
+Once inside the `errpipe` shell, run your commands as usual:
 
 ```sh
-errpipe config --llm openai --key YOUR_API_KEY
-errpipe config --llm anthropic --key YOUR_API_KEY
-errpipe config --llm groq --key YOUR_API_KEY
+[EP] C:\projects\myapp> go build
+# If it fails, errpipe captures the stderr and triggers the AI
 ```
 
-Config is stored at `~/.errpipe/config.json`.
-
-```json
-{
-  "llm": "openai",
-  "model": "gpt-4o",
-  "api_key": "sk-..."
-}
-```
+### Commands
+- `--help`: Show help message.
+- `--init`: Initialize the application.
+- `exit`: Leave the `errpipe` shell.
 
 ---
 
 ## Supported LLMs
 
-| Provider | Status |
-|---|---|
-| OpenAI (GPT-4o, GPT-4) | ✅ Supported |
-| Anthropic (Claude) | ✅ Supported |
-| Groq | ✅ Supported |
-| Ollama (local) | 🚧 Coming soon |
-| Google Gemini | 🚧 Coming soon |
+Currently, `errpipe` supports:
+
+| Provider | Status | Integration Method |
+|---|---|---|
+| Google Gemini | ✅ Supported | Via Gemini CLI |
+| Anthropic (Claude) | 🚧 Coming soon | Native API |
+| OpenAI | 🚧 Coming soon | Native API |
+
+*Note: For Gemini, ensure you have the Gemini CLI installed and configured on your system.*
 
 ---
 
 ## How it works
 
-```
-your terminal
-     │
-     ▼
-  stderr
-     │
-     ▼
-  errpipe         ← strips sensitive paths (optional)
-     │
-     ▼
- LLM API          ← your provider, your key
-     │
-     ▼
-  stdout          ← explanation + fix, right in your terminal
-```
-
-No middleman. No cloud storage. Your error goes to your LLM.
+1. **REPL**: `errpipe` acts as a thin wrapper around your default shell (`cmd` on Windows, `sh` on Linux/macOS).
+2. **Monitor**: It pipes `stdout` and `stderr` to your terminal while also capturing `stderr` in a buffer.
+3. **Trigger**: If a command returns a non-zero exit code, `errpipe` sends the captured `stderr` to the configured AI service.
+4. **Automation**: On Windows, it can automatically bring your Gemini CLI window to the front and type the error for you.
 
 ---
 
 ## Security
 
-Stack traces can contain secrets. File paths. Env variable names. Token prefixes.
-
-`errpipe` has a scrub mode. Use it.
-
-```sh
-errpipe config --scrub on
-```
-
-This strips common patterns before the error leaves your machine. It is not perfect. Be careful with what you pipe.
+`errpipe` runs locally and only sends data to the LLM when a command fails. Be mindful of sensitive information in your error logs.
 
 ---
 
 ## Contributing
 
-PRs are welcome. Keep it simple.
+PRs are welcome.
 
 1. Fork the repo
-2. Make your change
-3. Open a pull request
-
-If you find a bug, open an issue. If you want a feature, open an issue first.
+2. Create your feature branch (`git checkout -b feature/amazing`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing`)
+5. Open a Pull Request
 
 ---
 
 ## License
 
-MIT. Use it. Break it. Fix it.
-
----
-
-<div align="center">
-
-Built for engineers who read their error messages.
-
-<!-- PLACE YOUR FOOTER LOGO/EMOJI/BANNER HERE -->
-<!-- Example: ![footer](./assets/footer.png) -->
-
-</div>
+MIT.
