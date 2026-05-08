@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errpipe/ai/gemini"
+	"errpipe/internal/ai/gemini"
 	"fmt"
 )
 
