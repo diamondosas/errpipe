@@ -63,7 +63,7 @@ func findBrowser() (string, error) {
 }
 
 
-func openBroswer(errorMessage string){
+func OpenBrowser(errorMessage string){
 	browserPath, err := findBrowser()
 	if err != nil {
 		fmt.Println(err)

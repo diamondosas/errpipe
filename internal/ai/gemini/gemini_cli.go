@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"errpipe/internal/utils"
+	"errpipe/internal/utils/window"
 
 	"github.com/go-vgo/robotgo"
 	
@@ -49,7 +50,7 @@ func GeminiCli(errorMessage string) {
 
     var lastErr error
     for _, targetPID := range candidates {
-        lastErr = utils.BringWindowToFrontByPID(int(targetPID))
+        lastErr = window.BringWindowToFrontByPID(int(targetPID))
         if lastErr == nil {
             fmt.Printf("DEBUG: Successfully brought PID %d to front. Typing error...\n", targetPID)
             time.Sleep(500 * time.Millisecond)
