@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"time"
 
-	"errpipe/internal/ai/utils"
+	"errpipe/internal/utils"
 
 	"github.com/go-vgo/robotgo"
 	
