@@ -4,3 +4,5 @@ errpipe.exe
 error.txt
 ideas.txt
 docs.txt
+prompt.txt
+.gitignore
