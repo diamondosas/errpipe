@@ -6,5 +6,5 @@ import(
 
 
 func openWeb(errorMessage string){
-	utils.OpenBrowser("" + errorMessage)
+	utils.Fin
 }

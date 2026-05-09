@@ -3,6 +3,7 @@ module errpipe
 go 1.25.0
 
 require (
+	github.com/go-rod/rod v0.116.2
 	github.com/go-vgo/robotgo v1.0.2
 	github.com/shirou/gopsutil/v3 v3.24.5
 )
@@ -28,6 +29,11 @@ require (
 	github.com/vcaesar/keycode v0.10.1 // indirect
 	github.com/vcaesar/screenshot v0.11.1 // indirect
 	github.com/vcaesar/tt v0.20.1 // indirect
+	github.com/ysmood/fetchup v0.2.3 // indirect
+	github.com/ysmood/goob v0.4.0 // indirect
+	github.com/ysmood/got v0.40.0 // indirect
+	github.com/ysmood/gson v0.7.3 // indirect
+	github.com/ysmood/leakless v0.9.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
 	golang.org/x/image v0.38.0 // indirect
