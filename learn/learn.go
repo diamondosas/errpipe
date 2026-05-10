@@ -1,37 +1,62 @@
 package main
 
 import (
-	"fmt"
-	"os/exec"
-	"strings"
-	"time"
-
-	"github.com/go-vgo/robotgo"
+    "fmt"
+    "github.com/AlecAivazis/survey/v2"
 )
 
-// func main() {
-// 	// 1. Run the command and capture the text
-// 	// We run 'cmd /C echo Hello World' to get the output on Windows
-// 	cmd := exec.Command("cmd", "/C", "echo Hello World")
-// 	out, err := cmd.Output()
-// 	if err != nil {
-// 		fmt.Println("Error running command:", err)
-// 		return
-// 	}
+type ProjectConfig struct {
+    Name       string
+    Framework  string
+    UseTS      bool
+    PackageMan string
+}
 
-// 	// Clean up the output text
-// 	capturedText := strings.TrimSpace(string(out))
-// 	fmt.Printf("I captured this message: %s\n", capturedText)
+func main() {
+    config := ProjectConfig{}
 
-// 	// 2. Open a second terminal window
-// 	// 'start cmd' tells Windows to launch a new terminal window
-// 	exec.Command("cmd", "/C", "start", "cmd").Run()
+    // Each question is defined separately
+    questions := []*survey.Question{
+        {
+            Name: "name",
+            Prompt: &survey.Input{
+                Message: "What is your project name?",
+                Default: "my-app",
+            },
+            Validate: survey.Required, // built-in validator
+        },
+        {
+            Name: "framework",
+            Prompt: &survey.Select{
+                Message: "Choose a framework:",
+                Options: []string{"Next.js", "Remix", "Astro"},
+            },
+        },
+        {
+            Name: "useTS",
+            Prompt: &survey.Confirm{
+                Message: "Use TypeScript?",
+                Default: true,
+            },
+        },
+        {
+            Name: "packageMan",
+            Prompt: &survey.Select{
+                Message: "Package manager:",
+                Options: []string{"npm", "pnpm", "bun"},
+            },
+        },
+    }
 
-// 	// 3. Wait for the window to appear and focus
-// 	time.Sleep(2 * time.Second)
+    // survey fills the struct for you via field name matching
+    err := survey.Ask(questions, &config)
+    if err != nil {
+        fmt.Println("Cancelled.")
+        return
+    }
 
-// 	// 4. Automatically type the text into the new window
-// 	message := "echo The first terminal sent this: " + capturedText
-// 	robotgo.TypeStr(message)
-// 	robotgo.KeyTap("enter")
-// }
+    fmt.Printf("\n✓ Creating %s with %s (%s)\n", config.Name, config.Framework, config.PackageMan)
+    if config.UseTS {
+        fmt.Println("✓ TypeScript enabled")
+    }
+}

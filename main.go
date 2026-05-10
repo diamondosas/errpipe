@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strings"
 	// "errors"
+	"errpipe/internal/cli"
 )
 
 /* How the Applcication Runs
@@ -74,7 +75,7 @@ func initFlags() bool{
 		return false
 	}
 	if *init{
-		initApp()
+		cli.InitApp()
 		return false
 	}
 	
@@ -105,11 +106,6 @@ func runCmd(input string) (string, bool) {
 		return stderrBuf.String(), true
 	}
 	return "", false //idk the value of err null
-}
-
-func initApp() {
-	fmt.Println("Initiaised")
-	//Set Methods 
 }
 
 func printHelp(){
