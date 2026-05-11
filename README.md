@@ -28,12 +28,24 @@ Instead of switching to your browser manually, `errpipe` brings the fix to you, 
 
 ## Install
 
+### Quick Install (Recommended)
+
+**Windows (PowerShell)**
+```powershell
+irm https://diamondosas.github.io/errpipe/install/install.ps1 | iex
+```
+
+**macOS / Linux**
+```bash
+curl -fsSL https://diamondosas.github.io/errpipe/install/install.sh | sh
+```
+
 ### From Source (Go required)
 
 Ensure you have Go installed (1.21+ recommended).
 
 ```sh
-git clone https://github.com/DiamondOsasx/errpipe.git
+git clone https://github.com/diamondosas/errpipe.git
 cd errpipe
 go build -o errpipe.exe
 ```

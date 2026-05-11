@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>errpipe - Modern Error Handling</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/logo.png">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="assets/logo.png" alt="errpipe logo" class="logo">
+            <h1>errpipe</h1>
+            <p class="tagline">Piping errors to your favorite AI models for instant fixes.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="installation">
+            <h2>Quick Install</h2>
+            
+            <div class="tabs">
+                <button class="tab-link active" onclick="openTab(event, 'windows')">Windows (PowerShell)</button>
+                <button class="tab-link" onclick="openTab(event, 'unix')">macOS / Linux</button>
+            </div>
+
+            <div id="windows" class="tab-content show">
+                <div class="code-block">
+                    <code>irm https://diamondosas.github.io/errpipe/install/install.ps1 | iex</code>
+                    <button class="copy-btn" onclick="copyToClipboard('windows-code')">Copy</button>
+                    <input type="hidden" id="windows-code" value="irm https://diamondosas.github.io/errpipe/install/install.ps1 | iex">
+                </div>
+            </div>
+
+            <div id="unix" class="tab-content">
+                <div class="code-block">
+                    <code>curl -fsSL https://diamondosas.github.io/errpipe/install/install.sh | sh</code>
+                    <button class="copy-btn" onclick="copyToClipboard('unix-code')">Copy</button>
+                    <input type="hidden" id="unix-code" value="curl -fsSL https://diamondosas.github.io/errpipe/install/install.sh | sh">
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Why errpipe?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Instant Debugging</h3>
+                    <p>Pipe your command output directly into errpipe and get AI-powered explanations and fixes.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Multi-Model Support</h3>
+                    <p>Works with Gemini, Claude, and ChatGPT. Use the model you prefer.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Developer Friendly</h3>
+                    <p>Built with Go for performance and easy distribution across all platforms.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 errpipe. View on <a href="https://github.com/diamondosas/errpipe">GitHub</a>.</p>
+    </footer>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("show");
+            }
+            tablinks = document.getElementsByClassName("tab-link");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("show");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function copyToClipboard(elementId) {
+            var copyText = document.getElementById(elementId);
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
