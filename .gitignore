@@ -1,8 +1,8 @@
 learn/
-cmd.txt
-errpipe.exe
-error.txt
-ideas.txt
+.gitgnore
 docs.txt
+error.txt
+errpipe.exe
+ideas.txt
 prompt.txt
-.gitignore
+go.sum

@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="assets/logo.png" alt="errpipe logo" width="200">
+
 ![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)
 ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 ![platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)
