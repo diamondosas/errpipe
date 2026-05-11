@@ -33,8 +33,17 @@ func main(){
 	ok := initFlags()
 	
 	if ok{
+		// Check if config exists
+		config, err := cli.LoadConfig()
+		if err != nil {
+			fmt.Println("Configuration not found.")
+			fmt.Println("Please run 'errpipe --init' to setup the application.")
+			return
+		}
+
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Println(INTRO)
+		fmt.Printf("Using: %s (%s)\n", config.Provider, config.Mode)
 		
 		
 		for{
@@ -57,7 +66,7 @@ func main(){
 			error, ok := runCmd(input)
 			// errmsg := err.Error()
 			if ok{
-				sendtoAI(error)
+				sendtoAI(error, config)
 				
 			}
 			
