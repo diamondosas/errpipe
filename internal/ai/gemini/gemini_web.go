@@ -5,5 +5,5 @@ import (
 )
 
 func OpenWeb(errorMessage string) {
-	utils.OpenBrowser(errorMessage)
+	utils.OpenBrowser("Gemini", errorMessage)
 }

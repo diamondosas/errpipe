@@ -63,7 +63,7 @@ func findBrowser() (string, error) {
 }
 
 
-func OpenBrowser(errorMessage string){
+func OpenBrowser(provider, errorMessage string) {
 	browserPath, err := findBrowser()
 	if err != nil {
 		fmt.Println(err)
@@ -76,10 +76,28 @@ func OpenBrowser(errorMessage string){
 	}
 
 	browser := rod.New().ControlURL(wsURL).MustConnect()
-	page := browser.MustPage("https://gemini.google.com/app")
-	fmt.Println("Waiting for chat box...")
 
-	chatBox := page.MustElement("rich-textarea")
+	var pageURL, chatBoxSelector string
+
+	switch provider {
+	case "Gemini":
+		pageURL = "https://gemini.google.com/app"
+		chatBoxSelector = "rich-textarea"
+	case "ChatGPT":
+		pageURL = "https://chatgpt.com/"
+		chatBoxSelector = "#prompt-textarea"
+	case "Claude":
+		pageURL = "https://claude.ai/new"
+		chatBoxSelector = "[contenteditable='true']"
+	default:
+		pageURL = "https://gemini.google.com/app"
+		chatBoxSelector = "rich-textarea"
+	}
+
+	page := browser.MustPage(pageURL)
+	fmt.Printf("Waiting for %s chat box...\n", provider)
+
+	chatBox := page.MustElement(chatBoxSelector)
 	prompt := fmt.Sprintf("I'm getting the following error, please help me fix it:\n\n%s", errorMessage)
 	chatBox.MustInput(prompt)
 	page.Keyboard.Press(input.Enter)
