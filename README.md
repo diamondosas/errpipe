@@ -17,9 +17,9 @@
 
 ## What is this
 
-`errpipe` is an interactive shell wrapper built in Go that monitors your commands. When a command fails, it automatically captures the error output and sends it to an LLM (currently Gemini) for immediate analysis and fixes.
+`errpipe` is an interactive shell wrapper built in Go that monitors your commands. When a command fails, it automatically captures the error output and sends it to your preferred LLM for immediate analysis and fixes.
 
-Instead of switching to your browser, `errpipe` brings the fix to you.
+Instead of switching to your browser manually, `errpipe` brings the fix to you, either directly in your terminal or by automating your browser.
 
 ---
 
@@ -27,7 +27,7 @@ Instead of switching to your browser, `errpipe` brings the fix to you.
 
 ### From Source (Go required)
 
-Ensure you have Go installed (1.25+ recommended).
+Ensure you have Go installed (1.21+ recommended).
 
 ```sh
 git clone https://github.com/DiamondOsasx/errpipe.git
@@ -41,7 +41,16 @@ Add the resulting binary to your system PATH.
 
 ## Usage
 
-Simply run `errpipe` to start the interactive session.
+### 1. Initialize
+Before your first session, run the interactive setup:
+
+```sh
+errpipe --init
+```
+Follow the prompts to choose your provider (Gemini, Claude, or ChatGPT) and your preferred mode.
+
+### 2. Start Session
+Run `errpipe` to start the interactive session.
 
 ```sh
 errpipe
@@ -56,37 +65,40 @@ Once inside the `errpipe` shell, run your commands as usual:
 
 ### Commands
 - `--help`: Show help message.
-- `--init`: Initialize the application.
+- `--init`: Initialize/Reconfigure the application.
 - `exit`: Leave the `errpipe` shell.
 
 ---
 
-## Supported LLMs
+## Supported LLMs & Modes
 
-Currently, `errpipe` supports:
+`errpipe` supports three primary ways to interact with AI:
 
-| Provider | Status | Integration Method |
-|---|---|---|
-| Google Gemini | ✅ Supported | Via Gemini CLI |
-| Anthropic (Claude) | 🚧 Coming soon | Native API |
-| OpenAI | 🚧 Coming soon | Native API |
+| Provider | Status | Inline (Streaming) | CLI Mode | Web Mode |
+|---|---|---|---|---|
+| Google Gemini | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
+| Anthropic Claude | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
+| OpenAI ChatGPT | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
 
-*Note: For Gemini, ensure you have the Gemini CLI installed and configured on your system.*
+### Integration Modes
+1.  **Inline CLI Mode**: Streams AI responses directly into your terminal. This is the fastest method but requires an **API Key** from the provider.
+2.  **CLI Mode**: Interacts with the official CLI tools of the providers installed on your system.
+3.  **Web Mode**: Automatically detects your browser, opens the provider's chat page, and types the error message for you using browser automation.
 
 ---
 
 ## How it works
 
-1. **REPL**: `errpipe` acts as a thin wrapper around your default shell (`cmd` on Windows, `sh` on Linux/macOS).
-2. **Monitor**: It pipes `stdout` and `stderr` to your terminal while also capturing `stderr` in a buffer.
-3. **Trigger**: If a command returns a non-zero exit code, `errpipe` sends the captured `stderr` to the configured AI service.
-4. **Automation**: On Windows, it can automatically bring your Gemini CLI window to the front and type the error for you.
+1.  **REPL**: `errpipe` acts as a thin wrapper around your default shell (`cmd/powershell` on Windows, `sh/bash` on Linux/macOS).
+2.  **Monitor**: It pipes `stdout` and `stderr` to your terminal while also capturing `stderr` in a buffer.
+3.  **Trigger**: If a command returns a non-zero exit code, `errpipe` sends the captured `stderr` to the configured AI service.
+4.  **Analysis**: Depending on your mode, it will either stream the fix directly or automate your environment to get you the answer.
 
 ---
 
 ## Security
 
-`errpipe` runs locally and only sends data to the LLM when a command fails. Be mindful of sensitive information in your error logs.
+`errpipe` runs locally and only sends data to the LLM when a command fails. Be mindful of sensitive information in your error logs before sending them to public AI models.
 
 ---
 
