@@ -18,10 +18,6 @@ jobs:
             goos: linux
             goarch: amd64
             binary_name: errpipe-linux-amd64
-          - os: ubuntu-latest
-            goos: linux
-            goarch: arm64
-            binary_name: errpipe-linux-arm64
           - os: windows-latest
             goos: windows
             goarch: amd64
@@ -50,21 +46,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libx11-dev libxtst-dev libpng-dev libxext-dev libxinerama-dev libxrandr-dev
-          # If building for ARM64 on an AMD64 runner, we need the cross-compiler
-          if [ "${{ matrix.goarch }}" = "arm64" ]; then
-            sudo apt-get install -y gcc-aarch64-linux-gnu
-          fi
 
       - name: Build
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 1
+        shell: bash
         run: |
-          # Set the C compiler specifically for Linux ARM64 cross-compilation
-          if [ "${{ matrix.goos }}" = "linux" ] && [ "${{ matrix.goarch }}" = "arm64" ]; then
-            export CC=aarch64-linux-gnu-gcc
-          fi
           go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go ai.go
 
       - name: Compress with UPX
@@ -73,7 +62,6 @@ jobs:
           files: ${{ matrix.binary_name }}
           args: -9
           strip: true
-        # UPX sometimes struggles with cross-compiled ARM64 binaries on Linux
         continue-on-error: true 
 
       - name: Upload Artifact
