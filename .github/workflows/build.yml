@@ -1,11 +1,9 @@
 name: Build and Release
-
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
-
 jobs:
   build:
     name: Build Binary
@@ -30,23 +28,19 @@ jobs:
             goos: darwin
             goarch: arm64
             binary_name: errpipe-darwin-arm64
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.21'
           cache: true
-
       - name: Install Linux Dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libx11-dev libxtst-dev libpng-dev libxext-dev libxinerama-dev libxrandr-dev
-
       - name: Build
         env:
           GOOS: ${{ matrix.goos }}
@@ -55,40 +49,32 @@ jobs:
         shell: bash
         run: |
           go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go ai.go
-
       - name: Compress with UPX
         uses: svenstaro/upx-action@v2
         with:
           files: ${{ matrix.binary_name }}
           args: -9
           strip: true
-        continue-on-error: true 
-
+        continue-on-error: true
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary_name }}
           path: ${{ matrix.binary_name }}
-
   release:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
-    if: |
-      always() &&
-      startsWith(github.ref, 'refs/tags/') &&
-      (needs.build.result == 'success' || needs.build.result == 'failure')
+    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
           merge-multiple: true
         continue-on-error: true
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
