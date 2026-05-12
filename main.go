@@ -86,7 +86,7 @@ func main(){
 				} else if input != "" {
 					error, ok := runCmd(input)
 					if ok{
-						sendtoAI(error, config)
+						utils.SendToAI(error, config)
 					}
 				}
 				printPrompt()

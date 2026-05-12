@@ -1,9 +1,9 @@
 package claude
 
 import (
-	"errpipe/internal/utils"
+	"errpipe/internal/utils/sys"
 )
 
 func OpenWeb(errorMessage string) {
-	utils.OpenBrowser("Claude", errorMessage)
+	sys.OpenBrowser("Claude", errorMessage)
 }

@@ -5,20 +5,19 @@ import (
 	"os/exec"
 	"time"
 
-	"errpipe/internal/utils"
+	"errpipe/internal/utils/sys"
 	"errpipe/internal/utils/window"
 
 	"github.com/go-vgo/robotgo"
-	
 )
 
 func GeminiCli(errorMessage string) {
-    if _, ok := utils.IsInstalled("gemini"); !ok {
+    if _, ok := sys.IsInstalled("gemini"); !ok {
         fmt.Println("Gemini CLI is not installed")
         return
     }
 
-    pids, running := utils.IsRunning("gemini")
+    pids, running := sys.IsRunning("gemini")
     if !running {
         fmt.Println("Gemini CLI is not running. Starting it now...")
         cmd := exec.Command("cmd", "/C", "start", "gemini", "--prompt", errorMessage)
@@ -39,7 +38,7 @@ func GeminiCli(errorMessage string) {
             candidates = append(candidates, pid)
             seen[pid] = true
         }
-        ppid := utils.GetParentPID(pid)
+        ppid := sys.GetParentPID(pid)
         if ppid > 0 && !seen[ppid] {
             candidates = append(candidates, ppid)
             seen[ppid] = true

@@ -1,9 +1,9 @@
 package gemini
 
 import (
-	"errpipe/internal/utils"
+	"errpipe/internal/utils/sys"
 )
 
 func OpenWeb(errorMessage string) {
-	utils.OpenBrowser("Gemini", errorMessage)
+	sys.OpenBrowser("Gemini", errorMessage)
 }

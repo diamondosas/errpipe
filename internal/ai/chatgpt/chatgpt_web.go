@@ -1,9 +1,9 @@
 package chatgpt
 
 import (
-	"errpipe/internal/utils"
+	"errpipe/internal/utils/sys"
 )
 
 func OpenWeb(errorMessage string) {
-	utils.OpenBrowser("ChatGPT", errorMessage)
+	sys.OpenBrowser("ChatGPT", errorMessage)
 }

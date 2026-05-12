@@ -5,19 +5,19 @@ import (
 	"os/exec"
 	"time"
 
-	"errpipe/internal/utils"
+	"errpipe/internal/utils/sys"
 	"errpipe/internal/utils/window"
 
 	"github.com/go-vgo/robotgo"
 )
 
 func ChatgptCli(errorMessage string) {
-	if _, ok := utils.IsInstalled("chatgpt"); !ok {
+	if _, ok := sys.IsInstalled("chatgpt"); !ok {
 		fmt.Println("ChatGPT CLI is not installed")
 		return
 	}
 
-	pids, running := utils.IsRunning("chatgpt")
+	pids, running := sys.IsRunning("chatgpt")
 	if !running {
 		fmt.Println("ChatGPT CLI is not running. Starting it now...")
 		cmd := exec.Command("cmd", "/C", "start", "chatgpt", "--prompt", errorMessage)
@@ -36,7 +36,7 @@ func ChatgptCli(errorMessage string) {
 			candidates = append(candidates, pid)
 			seen[pid] = true
 		}
-		ppid := utils.GetParentPID(pid)
+		ppid := sys.GetParentPID(pid)
 		if ppid > 0 && !seen[ppid] {
 			candidates = append(candidates, ppid)
 			seen[ppid] = true
