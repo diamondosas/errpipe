@@ -9,10 +9,13 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"runtime"
 	"strings"
+	"syscall"
 	// "errors"
 	"errpipe/internal/cli"
+	"errpipe/internal/utils"
 )
 
 /* How the Applcication Runs
@@ -26,9 +29,10 @@ import (
  * Check whether
  */
  
-var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
+// var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
  
 func main(){
+	utils.EnableANSI()
 	
 	ok := initFlags()
 	
@@ -41,35 +45,52 @@ func main(){
 			return
 		}
 
-		scanner := bufio.NewScanner(os.Stdin)
-		fmt.Println(INTRO)
-		fmt.Printf("Using: %s (%s)\n", config.Provider, config.Mode)
+		// fmt.Println(INTRO)
+		// fmt.Printf("Using: %s (%s)\n", config.Provider, config.Mode)
+		utils.PrintWelcome(config.Provider, config.Mode)
 		
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+		inputChan := make(chan string)
+
+		go func() {
+			for {
+				reader := bufio.NewReader(os.Stdin)
+				line, err := reader.ReadString('\n')
+				if err != nil {
+					continue
+				}
+				inputChan <- strings.TrimSpace(line)
+			}
+		}()
 		
-		for{
+		printPrompt := func() {
 			dir, err := os.Getwd()
 			if err != nil{
 				dir = "UnknownDIR"
 			}
-			fmt.Print("[EP] " + dir + ">")
-			 	
-			if !scanner.Scan(){
-				break
+			utils.PrintPrompt(dir)
+		}
+
+		printPrompt()
+		for{
+			select {
+			case sig := <-sigChan:
+				fmt.Printf("\n\t%s[!] Caught signal '%v'. Type 'exit' to quit.%s\n", utils.Fg(196), sig, utils.ResetStr())
+				printPrompt()
+			case input := <-inputChan:
+				if input == "exit"{
+					signal.Stop(sigChan)
+					return
+				} else if input != "" {
+					error, ok := runCmd(input)
+					if ok{
+						sendtoAI(error, config)
+					}
+				}
+				printPrompt()
 			}
-			input := strings.TrimSpace(scanner.Text())
-			
-			if input == ""{
-				continue
-			}else if input == "exit"{
-				break
-			}
-			error, ok := runCmd(input)
-			// errmsg := err.Error()
-			if ok{
-				sendtoAI(error, config)
-				
-			}
-			
 		}
 	}
 	

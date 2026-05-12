@@ -10,7 +10,7 @@ import (
 // Stream starts a streaming session with Gemini using GoAI
 func Stream(apiKey, errorMessage string) (*goai.TextStream, error) {
 	ctx := context.Background()
-	model := google.Chat("gemini-2.5-pro", google.WithAPIKey(apiKey))
+	model := google.Chat("gemini-3.1-flash-lite", google.WithAPIKey(apiKey))
 
 	return goai.StreamText(ctx, model,
 		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),

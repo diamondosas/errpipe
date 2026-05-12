@@ -5,6 +5,7 @@ import (
 	"errpipe/internal/ai/claude"
 	"errpipe/internal/ai/gemini"
 	"errpipe/internal/cli"
+	"errpipe/internal/utils"
 	"fmt"
 
 
@@ -12,11 +13,9 @@ import (
 )
 
 func sendtoAI(errormsg string, config cli.Config) {
-	fmt.Printf("Sending Error to %s (%s)\n", config.Provider, config.Mode)
-
 	// Validate API Key for Inline CLI Mode
 	if config.Mode == "Inline CLI Mode" && config.APIKey == "" {
-		fmt.Println("Error: API Key is required for this mode. Please run 'errpipe --init' to configure it.")
+		utils.PrintError("API Key is required for this mode. Please run 'errpipe --init' to configure it.")
 		return
 	}
 
@@ -46,13 +45,15 @@ func sendtoAI(errormsg string, config cli.Config) {
 			chatgpt.OpenWeb(errormsg)
 		}
 	default:
-		fmt.Printf("Provider %s is not supported.\n", config.Provider)
+		utils.PrintError(fmt.Sprintf("Provider %s is not supported.", config.Provider))
 	}
 }
 
 func handleInline(errormsg string, config cli.Config) {
 	var stream *goai.TextStream
 	var err error
+
+	spinner := utils.StartSpinner("Sending to AI...")
 
 	switch config.Provider {
 	case "Gemini":
@@ -62,22 +63,25 @@ func handleInline(errormsg string, config cli.Config) {
 	case "ChatGPT":
 		stream, err = chatgpt.Stream(config.APIKey, errormsg)
 	default:
-		fmt.Println("Provider not supported for Inline Mode")
+		spinner.Stop()
+		utils.PrintError("Provider not supported for Inline Mode")
 		return
 	}
+
+	spinner.Stop()
 
 	if err != nil {
-		fmt.Printf("Error initializing AI stream: %v\n", err)
+		utils.PrintError(fmt.Sprintf("Error initializing AI stream: %v", err))
 		return
 	}
 
-	fmt.Println("\n--- AI Analysis (Streaming) ---")
+	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", utils.Fg(51), utils.Bold(), utils.ResetStr())
 	for text := range stream.TextStream() {
-		fmt.Print(text)
+		fmt.Print(utils.Fg(255) + text + utils.ResetStr())
 	}
-	fmt.Println("\n-------------------------------")
+	fmt.Printf("\n\n%s%s-------------------%s\n\n", utils.Fg(51), utils.Bold(), utils.ResetStr())
 
 	if err := stream.Err(); err != nil {
-		fmt.Printf("\nStream error occurred: %v\n", err)
+		utils.PrintError(fmt.Sprintf("Stream error occurred: %v", err))
 	}
 }
