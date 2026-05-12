@@ -14,6 +14,9 @@
 
 [Install](#install) · [Usage](#usage) · [How it Works](#how-it-works) · [Contributing](#contributing)
 
+<br>
+<img src="assets/errpipe.gif" alt="errpipe demo" width="720">
+
 </div>
 
 ---
@@ -37,20 +40,23 @@ irm https://diamondosas.github.io/errpipe/docs/install/install.ps1 | iex
 
 **macOS / Linux**
 ```bash
-curl -fsSL https://diamondosas.github.io/errpipe/docs/install/install.sh | sh
+curl -fsSL https://github.io | sh
 ```
 
-### From Source (Go required)
+<details>
+<summary><b>From Source (Go required)</b></summary>
 
 Ensure you have Go installed (1.21+ recommended).
 
 ```sh
-git clone https://github.com/diamondosas/errpipe.git
+git clone https://github.com/diamondosas/errpipe
 cd errpipe
-go build -o errpipe.exe
+go mod tidy
+go build -o errpipe
 ```
 
 Add the resulting binary to your system PATH.
+</details>
 
 ---
 
