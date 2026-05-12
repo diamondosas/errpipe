@@ -76,9 +76,7 @@ func handleInline(errormsg string, config cli.Config) {
 	}
 
 	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", utils.Fg(51), utils.Bold(), utils.ResetStr())
-	for text := range stream.TextStream() {
-		fmt.Print(utils.Fg(255) + text + utils.ResetStr())
-	}
+	utils.StreamWithHighlighting(stream.TextStream())
 	fmt.Printf("\n\n%s%s-------------------%s\n\n", utils.Fg(51), utils.Bold(), utils.ResetStr())
 
 	if err := stream.Err(); err != nil {

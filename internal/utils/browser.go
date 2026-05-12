@@ -203,7 +203,7 @@ func OpenBrowser(provider, errorMessage string) {
 	chatBox := page.MustElement(chatBoxSelector)
 	prompt := fmt.Sprintf("I'm getting the following error, please help me fix it:\n\n%s", errorMessage)
 	chatBox.MustInput(prompt)
-	page.Keyboard.Press(input.Enter)
+	page.Keyboard.Press(input.Enter)	
 
 	time.Sleep(10 * time.Second)
 

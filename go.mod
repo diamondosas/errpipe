@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
+	github.com/alecthomas/chroma/v2 v2.24.1
 	github.com/go-rod/rod v0.116.2
 	github.com/go-vgo/robotgo v1.0.2
 	github.com/shirou/gopsutil/v3 v3.24.5
@@ -12,6 +13,7 @@ require (
 
 require (
 	github.com/dblohm7/wingoes v0.0.0-20250822163801-6d8e6105c62d // indirect
+	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/gen2brain/shm v0.2.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect

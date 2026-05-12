@@ -48,7 +48,7 @@ jobs:
           CGO_ENABLED: 1
         shell: bash
         run: |
-          go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go ai.go
+          go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go 
       - name: Compress with UPX
         uses: svenstaro/upx-action@v2
         with:
