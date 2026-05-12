@@ -13,7 +13,7 @@ func Stream(apiKey, errorMessage string) (*goai.TextStream, error) {
 	model := google.Chat("gemini-2.5-pro", google.WithAPIKey(apiKey))
 
 	return goai.StreamText(ctx, model,
-		goai.WithSystem("You are an expert developer assistant. Analyze the error and provide a fix."),
+		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),
 		goai.WithPrompt(errorMessage),
 	)
 }
