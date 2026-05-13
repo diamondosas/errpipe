@@ -1,8 +1,8 @@
-# errpipe
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h1>errpipe</h1>
+    <img src="assets/logo.png" alt="errpipe" align="right" width="100"/>
+</div>
 
-<div align="center">
-
-<img src="assets/logo.png" alt="errpipe logo" width="100">
 <br>
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)
