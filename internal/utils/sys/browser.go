@@ -172,7 +172,7 @@ func OpenBrowser(provider, errorMessage string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	wsURL, err := launcher.NewUserMode().Bin(browserPath).Launch()
+	wsURL, err := launcher.NewUserMode().Bin(browserPath).Leakless(true).UserDataDir("errpipe").Launch()
 	if err != nil {
 		fmt.Printf("Failed to connect to browser: %v\n", err)
 		os.Exit(1)
