@@ -15,7 +15,7 @@
 [Install](#install) · [Usage](#usage) · [How it Works](#how-it-works) · [Contributing](#contributing)
 
 <br>
-<img src="assets/demo.gif" alt="errpipe demo" width="400">
+<img src="assets/demo.gif" alt="errpipe demo" width="600">
 </div>
 
 ---
