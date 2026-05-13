@@ -164,9 +164,7 @@ h1 {
     margin: 0;
     line-height: 1.1;
     letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text);
 }
 
 h1 span {

@@ -1,21 +1,28 @@
-<div style="display: flex; justify-content: space-between; align-items: center;">
-    <h1>errpipe</h1>
-    <img src="assets/logo.png" alt="errpipe" align="right" width="100"/>
-</div>
+<div align="center">
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <img src="assets/logo.png" alt="errpipe" width="100" style="margin-right: 20px;">
+    <h1 style="border-bottom: none;">errpipe</h1>
+  </div>
 
-<br>
+  <br>
 
-![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)
-![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
-![platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)
-![built with](https://img.shields.io/badge/built%20with-go%20%E2%9D%A4-00ADD8?style=flat-square)
+  ![version](https://img.shields.io/badge/version-0.1.0-blue?style=flat-square)
+  ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+  ![platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)
+  ![built with](https://img.shields.io/badge/built%20with-go%20%E2%9D%A4-00ADD8?style=flat-square)
 
-**Stop copy/pasting errors. Let your terminal talk to AI.**
+  <br>
 
-[Install](#install) · [Usage](#usage) · [How it Works](#how-it-works) · [Contributing](#contributing)
+  **Stop copy/pasting errors. Let your terminal talk to AI.**
 
-<br>
-<img src="assets/demo.gif" alt="errpipe demo" width="600">
+  <br>
+
+  [Install](#install) · [Usage](#usage) · [How it Works](#how-it-works) · [Contributing](#contributing)
+
+  <br>
+  <br>
+
+  <img src="assets/demo.gif" alt="errpipe demo" width="600">
 </div>
 
 ---
@@ -39,7 +46,7 @@ irm https://diamondosas.github.io/errpipe/docs/install/install.ps1 | iex
 
 **macOS / Linux**
 ```bash
-curl -fsSL https://github.io | sh
+curl -fsSL diamondosas.github.io/errpipe/docs/install/install.ps1 | sh
 ```
 
 <details>

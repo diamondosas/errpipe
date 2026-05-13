@@ -178,8 +178,8 @@ async function typeTerminal() {
                 div.className = 'error';
                 // Basic trace highlighting
                 div.innerHTML = line.content
-                    .replace(/"(.*\.py)"/g, \'<span class="hl-file">"$1"</span>\')
-                    .replace(/line (\d+)/g, \'line <span class="hl-line">$1</span>\');
+                    .replace(/"(.*\.py)"/g, '<span class="hl-file">"$1"</span>')
+                    .replace(/line (\d+)/g, 'line <span class="hl-line">$1</span>');
             }
             if (line.type === 'ai') {
                 div.className = 'ai-response';

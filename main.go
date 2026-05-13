@@ -117,7 +117,7 @@ func runCmd(input string) (string, bool) {
 		// err := exec.Command("powershell", "-command", "$PSVersionTable").Run()
 		// if err != nil{ 
 			cmd = exec.Command("cmd", "/C", input)
-			fmt.Println("Cmd")
+			// fmt.Println("Cmd")
 		// }else{ 
 		// 	cmd = exec.Command("powershell", "-c", input)
 		// 	fmt.Println("Power")
