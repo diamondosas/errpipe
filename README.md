@@ -64,6 +64,8 @@ go build -o errpipe
 Add the resulting binary to your system PATH.
 </details>
 
+>[!Note]
+>This project is not well suited for vibcoders.
 ---
 
 ## Usage
