@@ -7,3 +7,5 @@ ideas.txt
 prompt.txt
 main.py
 cmd.txt
+.gemini/
+gha-creds-*.json
