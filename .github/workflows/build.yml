@@ -67,6 +67,7 @@ jobs:
         run: |
           mkdir -p artifacts
           cp docs/install/install.ps1 ./artifacts/install.ps1 || true # Added || true just in case it doesn't exist on all builds
+          cp docs/install/install.sh ./artifacts/install.sh
           mv ${{ matrix.binary_name }} ./artifacts/
 
       - name: Upload Artifact

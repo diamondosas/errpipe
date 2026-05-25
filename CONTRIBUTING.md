@@ -44,7 +44,7 @@ go build -o errpipe
 ### Running in Development
 You can run the project directly using:
 ```bash
-go run main.go ai.go
+go run main.go 
 ```
 
 ---
