@@ -1,6 +1,6 @@
 #!/bin/sh
 # install.sh — Run with:
-# curl -fsSL https://diamondosas.github.io/errpipe/install/install.sh | sh
+# curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh
 
 set -e
 

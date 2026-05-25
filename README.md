@@ -41,12 +41,12 @@ Instead of switching to your browser manually, `errpipe` brings the fix to you, 
 
 **Windows (PowerShell)**
 ```powershell
-irm https://diamondosas.github.io/errpipe/docs/install/install.ps1 | iex
+irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex
 ```
 
 **macOS / Linux**
 ```bash
-curl -fsSL diamondosas.github.io/errpipe/docs/install/install.ps1 | sh
+curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh
 ```
 
 <details>

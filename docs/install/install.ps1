@@ -1,5 +1,5 @@
 # install.ps1 — Run with:
-# irm https://diamondosas.github.io/errpipe/install/install.ps1 | iex
+# irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 
