@@ -56,6 +56,10 @@ jobs:
           args: -9
           strip: true
         continue-on-error: true
+      - name : Copy Install Files
+        run : |
+            cp docs/install/install.ps1 ./artifacts/install.ps1
+            cp docs/install/install.ps1 ./artifacts/install.ps1
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -81,7 +85,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/*
+          files: |
+            artifacts/*
           generate_release_notes: true
           tag_name: v1.0.0
         env:
