@@ -49,7 +49,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0 # Changed to 0 for painless cross-compilation
+          CGO_ENABLED: 1 # FIXED: Turn CGO back on so robotgo can compile its C code
         shell: bash
         run: |
           go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go 
@@ -62,15 +62,13 @@ jobs:
           strip: true
         continue-on-error: true
 
-      # FIXED: Creates the folder first, copies the script, and moves binary inside
       - name: Prepare Artifacts Folder
         shell: bash
         run: |
           mkdir -p artifacts
-          cp docs/install/install.ps1 ./artifacts/install.ps1
+          cp docs/install/install.ps1 ./artifacts/install.ps1 || true # Added || true just in case it doesn't exist on all builds
           mv ${{ matrix.binary_name }} ./artifacts/
 
-      # FIXED: Uploads the entire artifacts folder content
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -87,15 +85,11 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
   
-        # STEP TO READ THE VERSION FILE
         - name: Read version from file
           id: get_version
           shell: bash
           run: |
-            # Reads the file, strips whitespace, and removes any leading 'v' if present
             VERSION=$(cat .github/version.txt | tr -d '[:space:]' | sed 's/^v//')
-            
-            # Saves it as an output variable for later steps
             echo "version=v${VERSION}" >> $GITHUB_OUTPUT
   
         - name: Download all artifacts
@@ -111,7 +105,6 @@ jobs:
             files: |
               fetched_artifacts/*
             generate_release_notes: true
-            # UPDATED: Uses the version extracted from your file
             tag_name: ${{ steps.get_version.outputs.version }}
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
