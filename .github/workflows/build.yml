@@ -77,41 +77,41 @@ jobs:
           name: ${{ matrix.binary_name }}
           path: artifacts/*
   
-    release:
-        name: Create Release
-        needs: build
-        runs-on: ubuntu-latest
-        permissions:
-          contents: write
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
-    
-          # STEP TO READ THE VERSION FILE
-          - name: Read version from file
-            id: get_version
-            shell: bash
-            run: |
-              # Reads the file, strips whitespace, and removes any leading 'v' if present
-              VERSION=$(cat .github/version.txt | tr -d '[:space:]' | sed 's/^v//')
-              
-              # Saves it as an output variable for later steps
-              echo "version=v${VERSION}" >> $GITHUB_OUTPUT
-    
-          - name: Download all artifacts
-            uses: actions/download-artifact@v4
-            with:
-              path: fetched_artifacts
-              merge-multiple: true
-            continue-on-error: true
-    
-          - name: Create Release
-            uses: softprops/action-gh-release@v2
-            with:
-              files: |
-                fetched_artifacts/*
-              generate_release_notes: true
-              # UPDATED: Uses the version extracted from your file
-              tag_name: ${{ steps.get_version.outputs.version }}
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release:
+      name: Create Release
+      needs: build
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        # STEP TO READ THE VERSION FILE
+        - name: Read version from file
+          id: get_version
+          shell: bash
+          run: |
+            # Reads the file, strips whitespace, and removes any leading 'v' if present
+            VERSION=$(cat .github/version.txt | tr -d '[:space:]' | sed 's/^v//')
+            
+            # Saves it as an output variable for later steps
+            echo "version=v${VERSION}" >> $GITHUB_OUTPUT
+  
+        - name: Download all artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: fetched_artifacts
+            merge-multiple: true
+          continue-on-error: true
+  
+        - name: Create Release
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              fetched_artifacts/*
+            generate_release_notes: true
+            # UPDATED: Uses the version extracted from your file
+            tag_name: ${{ steps.get_version.outputs.version }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
