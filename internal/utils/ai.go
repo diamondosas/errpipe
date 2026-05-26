@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"errpipe/internal/ai/chatgpt"
 	"errpipe/internal/ai/claude"
+	"errpipe/internal/ai/free"
 	"errpipe/internal/ai/gemini"
 	"errpipe/internal/cli"
 	"fmt"
@@ -10,17 +12,23 @@ import (
 	"github.com/zendev-sh/goai"
 )
 
-func SendToAI(errormsg string, config cli.Config) {
-	// Validate API Key for Inline CLI Mode
-	if config.Mode == "Inline CLI Mode" && config.APIKey == "" {
+func SendToAI(ctx context.Context, errormsg string, config cli.Config) {
+	// Validate API Key for Inline CLI Mode, unless it's Free mode
+	if config.Mode == "Inline CLI Mode" && config.APIKey == "" && config.Provider != "Free" {
 		PrintError("API Key is required for this mode. Please run 'errpipe --init' to configure it.")
 		return
 	}
 
 	switch config.Provider {
+	case "Free":
+		if config.Mode == "Inline CLI Mode" {
+			HandleFreeInline(ctx, errormsg)
+		} else {
+			PrintError("Free mode only supports Inline CLI Mode")
+		}
 	case "Gemini":
 		if config.Mode == "Inline CLI Mode" {
-			HandleInline(errormsg, config)
+			HandleInline(ctx, errormsg, config)
 		} else if config.Mode == "Gemini CLI Mode" {
 			gemini.GeminiCli(errormsg)
 		} else {
@@ -28,7 +36,7 @@ func SendToAI(errormsg string, config cli.Config) {
 		}
 	case "Claude":
 		if config.Mode == "Inline CLI Mode" {
-			HandleInline(errormsg, config)
+			HandleInline(ctx, errormsg, config)
 		} else if config.Mode == "Claude CLI Mode" {
 			claude.ClaudeCli(errormsg)
 		} else {
@@ -36,7 +44,7 @@ func SendToAI(errormsg string, config cli.Config) {
 		}
 	case "ChatGPT":
 		if config.Mode == "Inline CLI Mode" {
-			HandleInline(errormsg, config)
+			HandleInline(ctx, errormsg, config)
 		} else if config.Mode == "ChatGPT CLI Mode" {
 			chatgpt.ChatgptCli(errormsg)
 		} else {
@@ -47,19 +55,47 @@ func SendToAI(errormsg string, config cli.Config) {
 	}
 }
 
-func HandleInline(errormsg string, config cli.Config) {
+func HandleFreeInline(ctx context.Context, errormsg string) {
+	outChan := make(chan string)
+	errChan := make(chan error)
+
+	spinner := StartSpinner()
+
+	go free.StreamToChan(errormsg, outChan, errChan)
+
+	// We stop the spinner before we start printing the output.
+	// But we need to wait for the first chunk to stop the spinner ideally.
+	// For simplicity, stop it immediately before streaming.
+	spinner.Stop()
+
+	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", Fg(51), Bold(), ResetStr())
+
+	go func() {
+		for err := range errChan {
+			if err != nil {
+				PrintError(fmt.Sprintf("Stream error occurred: %v", err))
+			}
+		}
+	}()
+
+	StreamWithHighlighting(ctx, outChan)
+
+	fmt.Printf("\n\n%s%s-------------------%s\n\n", Fg(51), Bold(), ResetStr())
+}
+
+func HandleInline(ctx context.Context, errormsg string, config cli.Config) {
 	var stream *goai.TextStream
 	var err error
 
-	spinner := StartSpinner("Sending to AI...")
+	spinner := StartSpinner()
 
 	switch config.Provider {
 	case "Gemini":
-		stream, err = gemini.Stream(config.APIKey, errormsg)
+		stream, err = gemini.Stream(ctx, config.APIKey, errormsg)
 	case "Claude":
-		stream, err = claude.Stream(config.APIKey, errormsg)
+		stream, err = claude.Stream(ctx, config.APIKey, errormsg)
 	case "ChatGPT":
-		stream, err = chatgpt.Stream(config.APIKey, errormsg)
+		stream, err = chatgpt.Stream(ctx, config.APIKey, errormsg)
 	default:
 		spinner.Stop()
 		PrintError("Provider not supported for Inline Mode")
@@ -74,7 +110,7 @@ func HandleInline(errormsg string, config cli.Config) {
 	}
 
 	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", Fg(51), Bold(), ResetStr())
-	StreamWithHighlighting(stream.TextStream())
+	StreamWithHighlighting(ctx, stream.TextStream())
 	fmt.Printf("\n\n%s%s-------------------%s\n\n", Fg(51), Bold(), ResetStr())
 
 	if err := stream.Err(); err != nil {

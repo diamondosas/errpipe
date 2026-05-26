@@ -18,13 +18,16 @@ type Spinner struct {
 	stop chan struct{}
 }
 
-// StartSpinner initiates an animated spinner with the given message.
-func StartSpinner(msg string) *Spinner {
+// StartSpinner initiates an animated spinner with a progressive message.
+func StartSpinner() *Spinner {
 	s := &Spinner{stop: make(chan struct{})}
 	frames := []string{"⠋", "⠙", "⠸", "⠴", "⠦", "⠇"}
+	messages := []string{"Sending to AI.", "Sending to AI..", "Sending to AI..."}
 
 	go func() {
 		i := 0
+		j := 0
+		ticks := 0
 		for {
 			select {
 			case <-s.stop:
@@ -32,8 +35,13 @@ func StartSpinner(msg string) *Spinner {
 				fmt.Print("\r\033[K")
 				return
 			default:
-				fmt.Printf("\r\t%s%s%s %s%s", Fg(214), frames[i%len(frames)], ResetStr(), Dim(), msg+ResetStr())
+				// Change message every 5 ticks (500ms)
+				if ticks > 0 && ticks%5 == 0 {
+					j = (j + 1) % len(messages)
+				}
+				fmt.Printf("\r\t%s%s%s %s%s", Fg(214), frames[i%len(frames)], ResetStr(), Dim(), messages[j]+ResetStr())
 				i++
+				ticks++
 				time.Sleep(100 * time.Millisecond)
 			}
 		}

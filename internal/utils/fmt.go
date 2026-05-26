@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"bytes"
 	"fmt"
 	"strings"
@@ -10,84 +11,93 @@ import (
 
 // StreamWithHighlighting safely buffers text to look for markdown code blocks,
 // buffers the inner code, and applies syntax highlighting using Chroma.
-func StreamWithHighlighting(stream <-chan string) {
+func StreamWithHighlighting(ctx context.Context, stream <-chan string) {
 	inCodeBlock := false
 	var textBuffer string
 	var codeBuffer string
 	var lang string
 
-	for text := range stream {
-		textBuffer += text
-
-		for {
-			if !inCodeBlock {
-				// Look for start of code block
-				idx := strings.Index(textBuffer, "```")
-				if idx == -1 {
-					// Safe to print everything EXCEPT the last 2 characters (in case they are part of an incoming "```")
-					safeLen := len(textBuffer) - 2
-					if safeLen > 0 {
-						fmt.Print(Fg(255) + textBuffer[:safeLen] + ResetStr())
-						textBuffer = textBuffer[safeLen:]
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Print(ResetStr()) // Ensure we don't leave bad formatting
+			fmt.Printf("\n\n%s[!] Analysis cancelled.%s\n", Fg(196), ResetStr())
+			return
+		case text, ok := <-stream:
+			if !ok {
+				// Flush any remaining text/code when stream closes
+				if inCodeBlock {
+					codeBuffer += textBuffer
+					highlightAndPrintCode(codeBuffer, lang)
+				} else {
+					if len(textBuffer) > 0 {
+						fmt.Print(Fg(255) + textBuffer + ResetStr())
 					}
-					break // Break to wait for more chunks
 				}
-
-				// Print everything before ```
-				if idx > 0 {
-					fmt.Print(Fg(255) + textBuffer[:idx] + ResetStr())
-				}
-				textBuffer = textBuffer[idx+3:]
-
-				// Look for the end of the line to extract the language
-				nlIdx := strings.Index(textBuffer, "\n")
-				if nlIdx == -1 {
-					// We haven't received the newline after ``` yet.
-					// Put "```" back into the buffer and wait for more chunks.
-					textBuffer = "```" + textBuffer
-					break
-				}
-
-				// Extract language and skip the newline
-				lang = strings.TrimSpace(textBuffer[:nlIdx])
-				textBuffer = textBuffer[nlIdx+1:]
-
-				inCodeBlock = true
-				codeBuffer = ""
-			} else {
-				// We are in a code block, look for closing ```
-				idx := strings.Index(textBuffer, "```")
-				if idx == -1 {
-					// Safe to buffer everything EXCEPT the last 2 characters (in case they are part of an incoming "```")
-					safeLen := len(textBuffer) - 2
-					if safeLen > 0 {
-						codeBuffer += textBuffer[:safeLen]
-						textBuffer = textBuffer[safeLen:]
-					}
-					break // Break to wait for more chunks
-				}
-
-				// Found closing ```
-				codeBuffer += textBuffer[:idx]
-
-				// Highlight and print the buffered code!
-				highlightAndPrintCode(codeBuffer, lang)
-
-				// Reset state
-				inCodeBlock = false
-				codeBuffer = ""
-				textBuffer = textBuffer[idx+3:]
+				return
 			}
-		}
-	}
+			textBuffer += text
 
-	// Flush any remaining text/code when stream closes
-	if inCodeBlock {
-		codeBuffer += textBuffer
-		highlightAndPrintCode(codeBuffer, lang)
-	} else {
-		if len(textBuffer) > 0 {
-			fmt.Print(Fg(255) + textBuffer + ResetStr())
+			for {
+				if !inCodeBlock {
+					// Look for start of code block
+					idx := strings.Index(textBuffer, "```")
+					if idx == -1 {
+						// Safe to print everything EXCEPT the last 2 characters (in case they are part of an incoming "```")
+						safeLen := len(textBuffer) - 2
+						if safeLen > 0 {
+							fmt.Print(Fg(255) + textBuffer[:safeLen] + ResetStr())
+							textBuffer = textBuffer[safeLen:]
+						}
+						break // Break to wait for more chunks
+					}
+
+					// Print everything before ```
+					if idx > 0 {
+						fmt.Print(Fg(255) + textBuffer[:idx] + ResetStr())
+					}
+					textBuffer = textBuffer[idx+3:]
+
+					// Look for the end of the line to extract the language
+					nlIdx := strings.Index(textBuffer, "\n")
+					if nlIdx == -1 {
+						// We haven't received the newline after ``` yet.
+						// Put "```" back into the buffer and wait for more chunks.
+						textBuffer = "```" + textBuffer
+						break
+					}
+
+					// Extract language and skip the newline
+					lang = strings.TrimSpace(textBuffer[:nlIdx])
+					textBuffer = textBuffer[nlIdx+1:]
+
+					inCodeBlock = true
+					codeBuffer = ""
+				} else {
+					// We are in a code block, look for closing ```
+					idx := strings.Index(textBuffer, "```")
+					if idx == -1 {
+						// Safe to buffer everything EXCEPT the last 2 characters (in case they are part of an incoming "```")
+						safeLen := len(textBuffer) - 2
+						if safeLen > 0 {
+							codeBuffer += textBuffer[:safeLen]
+							textBuffer = textBuffer[safeLen:]
+						}
+						break // Break to wait for more chunks
+					}
+
+					// Found closing ```
+					codeBuffer += textBuffer[:idx]
+
+					// Highlight and print the buffered code!
+					highlightAndPrintCode(codeBuffer, lang)
+
+					// Reset state
+					inCodeBlock = false
+					codeBuffer = ""
+					textBuffer = textBuffer[idx+3:]
+				}
+			}
 		}
 	}
 }

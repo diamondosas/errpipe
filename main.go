@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"context"
 	// "errors"
 	"errpipe/internal/cli"
 	"errpipe/internal/utils"
@@ -40,9 +41,13 @@ func main(){
 		// Check if config exists
 		config, err := cli.LoadConfig()
 		if err != nil {
-			fmt.Println("Configuration not found.")
-			fmt.Println("Please run 'errpipe --init' to setup the application.")
-			return
+			config = cli.Config{
+				Provider: "Free",
+				Mode:     "Inline CLI Mode",
+			}
+			fmt.Println("No configuration found. Using default Free Mode (Inline).")
+			fmt.Println("Run 'errpipe --init' to change this setup.")
+			fmt.Println()
 		}
 
 		// fmt.Println(INTRO)
@@ -74,19 +79,38 @@ func main(){
 		}
 
 		printPrompt()
+
+		var cancel context.CancelFunc
+		var ctx context.Context
+		var isStreaming bool
+
 		for{
 			select {
 			case sig := <-sigChan:
-				fmt.Printf("\n\t%s[!] Caught signal '%v'. Type 'exit' to quit.%s\n", utils.Fg(196), sig, utils.ResetStr())
-				printPrompt()
+				if isStreaming && cancel != nil {
+					cancel()
+					isStreaming = false
+					// Wait for stream to actually stop and prompt to be printed from the main loop
+				} else {
+					fmt.Printf("\n\t%s[!] Caught signal '%v'. Type 'exit' to quit.%s\n", utils.Fg(196), sig, utils.ResetStr())
+					printPrompt()
+				}
 			case input := <-inputChan:
 				if input == "exit"{
 					signal.Stop(sigChan)
 					return
+				} else if strings.HasPrefix(input, "errpipe") {
+					fmt.Printf("\n\t%s[!] You are already in an errpipe session.%s\n", utils.Fg(214), utils.ResetStr())
 				} else if input != "" {
 					error, ok := runCmd(input)
 					if ok{
-						utils.SendToAI(error, config)
+						ctx, cancel = context.WithCancel(context.Background())
+						isStreaming = true
+						utils.SendToAI(ctx, error, config)
+						isStreaming = false
+						if cancel != nil {
+							cancel() // Clean up context
+						}
 					}
 				}
 				printPrompt()

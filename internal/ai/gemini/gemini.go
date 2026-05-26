@@ -8,8 +8,7 @@ import (
 )
 
 // Stream starts a streaming session with Gemini using GoAI
-func Stream(apiKey, errorMessage string) (*goai.TextStream, error) {
-	ctx := context.Background()
+func Stream(ctx context.Context, apiKey, errorMessage string) (*goai.TextStream, error) {
 	model := google.Chat("gemini-3.1-flash-lite", google.WithAPIKey(apiKey))
 
 	return goai.StreamText(ctx, model,

@@ -8,9 +8,8 @@ import (
 )
 
 // Stream starts a streaming session with ChatGPT using GoAI
-func Stream(apiKey, errorMessage string) (*goai.TextStream, error) {
-	ctx := context.Background()
-	model := openai.Chat("gpt-5.3-codex", openai.WithAPIKey(apiKey))
+func Stream(ctx context.Context, apiKey, errorMessage string) (*goai.TextStream, error) {
+	model := openai.Chat("gpt-4o-mini", openai.WithAPIKey(apiKey))
 
 	return goai.StreamText(ctx, model,
 		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),

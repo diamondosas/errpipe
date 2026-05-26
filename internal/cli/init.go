@@ -18,7 +18,7 @@ func InitApp() {
 	// First question: Choose Provider
 	providerQuestion := &survey.Select{
 		Message: "Choose an AI provider:",
-		Options: []string{"Gemini", "Claude", "ChatGPT"},
+		Options: []string{"Free", "Gemini", "Claude", "ChatGPT"},
 	}
 
 	err = survey.AskOne(providerQuestion, &config.Provider)
@@ -28,9 +28,16 @@ func InitApp() {
 	}
 
 	// Second question: Choose Mode based on provider
+	var modeOptions []string
+	if config.Provider == "Free" {
+		modeOptions = []string{"Inline CLI Mode"}
+	} else {
+		modeOptions = []string{"Inline CLI Mode", config.Provider + " CLI Mode", "Web Mode"}
+	}
+	
 	modeQuestion := &survey.Select{
 		Message: fmt.Sprintf("Choose mode for %s:", config.Provider),
-		Options: []string{"Inline CLI Mode", config.Provider + " CLI Mode", "Web Mode"},
+		Options: modeOptions,
 	}
 
 	err = survey.AskOne(modeQuestion, &config.Mode)
@@ -39,8 +46,8 @@ func InitApp() {
 		return
 	}
 
-	// Ask for API Key if Inline CLI Mode is selected
-	if config.Mode == "Inline CLI Mode" {
+	// Ask for API Key if Inline CLI Mode is selected and provider is not Free
+	if config.Mode == "Inline CLI Mode" && config.Provider != "Free" {
 		apiKeyQuestion := &survey.Input{
 			Message: "Enter your API Key:",
 		}
