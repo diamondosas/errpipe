@@ -14,6 +14,8 @@
   <br>
 
   **Stop copy/pasting errors. Let your terminal talk to AI.**
+  <br>
+  🚀 **No API Key? No Problem!** Includes a completely free mode out of the box.
 
   <br>
 
@@ -70,49 +72,53 @@ Add the resulting binary to your system PATH.
 
 ## Usage
 
-### 1. Initialize
-Before your first session, run the interactive setup:
-
-```sh
-errpipe --init
-```
-Follow the prompts to choose your provider (Gemini, Claude, or ChatGPT) and your preferred mode.
-
-### 2. Start Session
-Run `errpipe` to start the interactive session.
+Run `errpipe` to start the interactive session. On your first run, it will automatically guide you through a quick setup.
 
 ```sh
 errpipe
 ```
 
-Once inside the `errpipe` shell, run your commands as usual:
+Once inside the `errpipe` shell, run your commands as usual. It works with any language or tool:
 
 ```sh
+# Go
 [EP] C:\projects\myapp> go build
-# If it fails, errpipe captures the stderr and triggers the AI
+
+# Python
+[EP] ~/projects/myapp$ python main.py
+
+# Node.js
+[EP] ~/projects/myapp$ node app.js
+
+# Rust
+[EP] ~/projects/myapp$ cargo build
+
+# If any command fails, errpipe automatically captures the stderr and triggers the AI
 ```
 
 ### Commands
 - `--help`: Show help message.
-- `--init`: Initialize/Reconfigure the application.
+- `--init`: Reconfigure the application.
 - `exit`: Leave the `errpipe` shell.
 
 ---
 
 ## Supported LLMs & Modes
 
-`errpipe` supports three primary ways to interact with AI:
+`errpipe` supports multiple ways to interact with AI:
 
 | Provider | Status | Inline (Streaming) | CLI Mode | Web Mode |
 |---|---|---|---|---|
+| **Free Mode** | ✅ Supported | ✅ Yes | ❌ No | ❌ No |
 | Google Gemini | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
 | Anthropic Claude | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
 | OpenAI ChatGPT | ✅ Supported | ✅ Yes | ✅ Yes | ✅ Yes |
 
 ### Integration Modes
-1.  **Inline CLI Mode**: Streams AI responses directly into your terminal. This is the fastest method but requires an **API Key** from the provider.
-2.  **CLI Mode**: Interacts with the official CLI tools of the providers installed on your system.
-3.  **Web Mode**: Automatically detects your browser, opens the provider's chat page, and types the error message for you using browser automation.
+1.  **Free Mode**: Completely free, built-in AI mode. **No API key required!**
+2.  **Inline CLI Mode**: Streams AI responses directly into your terminal. Requires an **API Key** from the provider.
+3.  **CLI Mode**: Interacts with the official CLI tools of the providers installed on your system.
+4.  **Web Mode**: Automatically detects your browser, opens the provider's chat page, and types the error message for you using browser automation.
 
 ---
 
