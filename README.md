@@ -1,5 +1,5 @@
-<!--<div align="center">
-  <div style="display: flex; align-items: center; justify-content: center;">
+<div align="center">
+  <!--<div style="display: flex; align-items: center; justify-content: center;">
     <img src="assets/logo.png" alt="errpipe" width="100" style="margin-right: 20px;">
     <h1 style="border-bottom: none;">errpipe</h1>
   </div>-->
