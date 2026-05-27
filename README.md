@@ -1,8 +1,8 @@
-<div align="center">
+<!--<div align="center">
   <div style="display: flex; align-items: center; justify-content: center;">
     <!--<img src="assets/logo.png" alt="errpipe" width="100" style="margin-right: 20px;">-->
     <h1 style="border-bottom: none;">errpipe</h1>
-  </div>
+  </div>-->
 
   <br>
 
@@ -13,7 +13,8 @@
 
   <br>
 
-  **Stop copy/pasting errors. Let your terminal talk to AI.**
+  **Stop copy-pasting errors. Get instant fixes right in your terminal..**
+  <br>
   <br>
   🚀 **No API Key? No Problem!** Includes a completely free mode out of the box.
 
