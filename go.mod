@@ -4,9 +4,11 @@ go 1.25.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
+	github.com/Atoo35/pantry_client v1.0.1
 	github.com/alecthomas/chroma/v2 v2.24.1
 	github.com/go-rod/rod v0.116.2
 	github.com/go-vgo/robotgo v1.0.2
+	github.com/joho/godotenv v1.5.1
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/zendev-sh/goai v0.7.6
 )
