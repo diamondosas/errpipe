@@ -8,8 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	
 )
 
+var SYSTEM_PROMPT = " Respond in the shortest way possible with direct actionable fixes to the issue. No fluff. "+ 
+"Do it in this format: Only give code Solution to the problem given and explain why..." 
 // Models is defined to allow utils/models.go to compile, but is ignored.
 var Models = []string{
 	"gpt-4o-mini",
@@ -31,7 +34,7 @@ func StreamToChan(errorMessage string, outChan chan<- string, errChan chan<- err
 	defer close(outChan)
 	defer close(errChan)
 
-	prompt := "You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff. Issue: " + errorMessage
+	prompt := SYSTEM_PROMPT + errorMessage
 	encodedPrompt := url.PathEscape(prompt)
 	apiURL := "https://text.pollinations.ai/" + encodedPrompt + "?stream=true"
 
@@ -77,7 +80,7 @@ func StreamToChan(errorMessage string, outChan chan<- string, errChan chan<- err
 					if content != "" {
 						outChan <- content
 					}
-				}wwww
+				}
 			}
 		}
 	}
