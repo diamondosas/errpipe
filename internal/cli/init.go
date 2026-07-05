@@ -10,7 +10,7 @@ func InitApp() {
 	// Try to load existing config
 	existingConfig, err := LoadConfig()
 	if err == nil {
-		fmt.Printf("Current Configuration: AI - %s MODE - %s\n\n", existingConfig.Provider, existingConfig.Mode)
+		fmt.Printf("Current Configuration: AI - %s\n\n", existingConfig.Provider)
 	}
 
 	config := Config{}
@@ -27,29 +27,13 @@ func InitApp() {
 		return
 	}
 
-	// Second question: Choose Mode based on provider
-	var modeOptions []string
-	if config.Provider == "Free" {
-		modeOptions = []string{"Inline CLI Mode"}
-	} else {
-		modeOptions = []string{"Inline CLI Mode", config.Provider + " CLI Mode", "Web Mode"}
-	}
-	
-	modeQuestion := &survey.Select{
-		Message: fmt.Sprintf("Choose mode for %s:", config.Provider),
-		Options: modeOptions,
-	}
+	// Mode is always Inline CLI Mode
+	config.Mode = "Inline CLI Mode"
 
-	err = survey.AskOne(modeQuestion, &config.Mode)
-	if err != nil {
-		fmt.Println("Setup cancelled.")
-		return
-	}
-
-	// Ask for API Key if Inline CLI Mode is selected and provider is not Free
-	if config.Mode == "Inline CLI Mode" && config.Provider != "Free" {
+	// Ask for API Key if provider is not Free
+	if config.Provider != "Free" {
 		apiKeyQuestion := &survey.Input{
-			Message: "Enter your API Key:",
+			Message: fmt.Sprintf("Enter your %s API Key:", config.Provider),
 		}
 		err = survey.AskOne(apiKeyQuestion, &config.APIKey)
 		if err != nil {
@@ -63,14 +47,6 @@ func InitApp() {
 	if err != nil {
 		fmt.Printf("Error saving configuration: %v\n", err)
 	} else {
-		fmt.Printf("\n✓ Configuration Saved: %s in %s\n", config.Provider, config.Mode)
+		fmt.Printf("\n✓ Configuration Saved: %s (Inline CLI Mode)\n", config.Provider)
 	}
-
-	// Start the process based on the selected provider and mode
-	startProcess(config.Provider, config.Mode)
-}
-
-func startProcess(provider, mode string) {
-	fmt.Printf("Initializing %s (%s)...\n", provider, mode)
-	// Additional initialization logic for the provider and mode will go here
 }

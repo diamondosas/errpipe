@@ -14,42 +14,16 @@ import (
 
 func SendToAI(ctx context.Context, errormsg string, config cli.Config) {
 	// Validate API Key for Inline CLI Mode, unless it's Free mode
-	if config.Mode == "Inline CLI Mode" && config.APIKey == "" && config.Provider != "Free" {
-		PrintError("API Key is required for this mode. Please run 'errpipe --init' to configure it.")
+	if config.APIKey == "" && config.Provider != "Free" {
+		PrintError("API Key is required. Please run 'errpipe --init' to configure it.")
 		return
 	}
 
 	switch config.Provider {
 	case "Free":
-		if config.Mode == "Inline CLI Mode" {
-			HandleFreeInline(ctx, errormsg)
-		} else {
-			PrintError("Free mode only supports Inline CLI Mode")
-		}
-	case "Gemini":
-		if config.Mode == "Inline CLI Mode" {
-			HandleInline(ctx, errormsg, config)
-		} else if config.Mode == "Gemini CLI Mode" {
-			gemini.GeminiCli(errormsg)
-		} else {
-			gemini.OpenWeb(errormsg)
-		}
-	case "Claude":
-		if config.Mode == "Inline CLI Mode" {
-			HandleInline(ctx, errormsg, config)
-		} else if config.Mode == "Claude CLI Mode" {
-			claude.ClaudeCli(errormsg)
-		} else {
-			claude.OpenWeb(errormsg)
-		}
-	case "ChatGPT":
-		if config.Mode == "Inline CLI Mode" {
-			HandleInline(ctx, errormsg, config)
-		} else if config.Mode == "ChatGPT CLI Mode" {
-			chatgpt.ChatgptCli(errormsg)
-		} else {
-			chatgpt.OpenWeb(errormsg)
-		}
+		HandleFreeInline(ctx, errormsg)
+	case "Gemini", "Claude", "ChatGPT":
+		HandleInline(ctx, errormsg, config)
 	default:
 		PrintError(fmt.Sprintf("Provider %s is not supported.", config.Provider))
 	}

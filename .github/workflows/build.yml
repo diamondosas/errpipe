@@ -52,7 +52,7 @@ jobs:
           CGO_ENABLED: 1 # FIXED: Turn CGO back on so robotgo can compile its C code
         shell: bash
         run: |
-          go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go 
+          go build -ldflags="-s -w" -o ${{ matrix.binary_name }} main.go
 
       - name: Compress with UPX
         uses: svenstaro/upx-action@v2
