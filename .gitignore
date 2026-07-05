@@ -10,3 +10,4 @@ cmd.txt
 .gemini/
 gha-creds-*.json
 free.md
+.env
