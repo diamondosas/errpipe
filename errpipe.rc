@@ -1,7 +1,0 @@
-// errpipe.rc - Windows resource script
-// Embeds the application manifest into the binary
-
-#include "winuser.h"
-
-// Resource ID 1 = Application manifest
-1 RT_MANIFEST errpipe.manifest
