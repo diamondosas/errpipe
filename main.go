@@ -135,7 +135,6 @@ func initFlags() bool{
 	
 	return true
 }
-
 func runCmd(input string) (string, bool) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{

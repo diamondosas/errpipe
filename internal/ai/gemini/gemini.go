@@ -8,11 +8,21 @@ import (
 )
 
 // Stream starts a streaming session with Gemini using GoAI
-func Stream(ctx context.Context, apiKey, errorMessage string) (*goai.TextStream, error) {
-	model := google.Chat("gemini-3.1-flash-lite", google.WithAPIKey(apiKey))
+// func Stream(ctx context.Context, apiKey, errorMessage string) (*goai.TextStream, error) {
+// 	model := google.Chat("gemini-3.1-flash-lite", google.WithAPIKey(apiKey))
+
+// 	return goai.StreamText(ctx, model,
+// 		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),
+// 		goai.WithPrompt(errorMessage),
+// 	)
+// }
+
+
+func Stream(ctx context.Context, apikey, errorMessage string) (*goai.TextStream, error){
+	model := google.Chat(MODEL_ID, google.WithAPIKey(apikey))
 
 	return goai.StreamText(ctx, model,
-		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),
-		goai.WithPrompt(errorMessage),
+		goai.WithSystem("Respond in the shortest way possible with direct actionable fixes to the issue and explaining why the issue happend in a simple manner. No fluff"),
+		
 	)
 }

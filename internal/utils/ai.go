@@ -2,15 +2,13 @@ package utils
 
 import (
 	"context"
-	"errpipe/internal/ai/chatgpt"
-	"errpipe/internal/ai/claude"
-	"errpipe/internal/ai/free"
 	"errpipe/internal/ai/gemini"
 	"errpipe/internal/cli"
 	"fmt"
 
 	"github.com/zendev-sh/goai"
 )
+var GEMINI_MODELS []string
 
 func SendToAI(ctx context.Context, errormsg string, config cli.Config) {
 	// Validate API Key for Inline CLI Mode, unless it's Free mode
@@ -20,42 +18,14 @@ func SendToAI(ctx context.Context, errormsg string, config cli.Config) {
 	}
 
 	switch config.Provider {
-	case "Free":
-		HandleFreeInline(ctx, errormsg)
-	case "Gemini", "Claude", "ChatGPT":
+	case "Gemini":
 		HandleInline(ctx, errormsg, config)
 	default:
 		PrintError(fmt.Sprintf("Provider %s is not supported.", config.Provider))
 	}
 }
 
-func HandleFreeInline(ctx context.Context, errormsg string) {
-	outChan := make(chan string)
-	errChan := make(chan error)
 
-	spinner := StartSpinner()
-
-	go free.StreamToChan(errormsg, outChan, errChan)
-
-	// We stop the spinner before we start printing the output.
-	// But we need to wait for the first chunk to stop the spinner ideally.
-	// For simplicity, stop it immediately before streaming.
-	spinner.Stop()
-
-	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", Fg(51), Bold(), ResetStr())
-
-	go func() {
-		for err := range errChan {
-			if err != nil {
-				PrintError(fmt.Sprintf("Stream error occurred: %v", err))
-			}
-		}
-	}()
-
-	StreamWithHighlighting(ctx, outChan)
-
-	fmt.Printf("\n\n%s%s-------------------%s\n\n", Fg(51), Bold(), ResetStr())
-}
 
 func HandleInline(ctx context.Context, errormsg string, config cli.Config) {
 	var stream *goai.TextStream
@@ -65,11 +35,7 @@ func HandleInline(ctx context.Context, errormsg string, config cli.Config) {
 
 	switch config.Provider {
 	case "Gemini":
-		stream, err = gemini.Stream(ctx, config.APIKey, errormsg)
-	case "Claude":
-		stream, err = claude.Stream(ctx, config.APIKey, errormsg)
-	case "ChatGPT":
-		stream, err = chatgpt.Stream(ctx, config.APIKey, errormsg)
+		
 	default:
 		spinner.Stop()
 		PrintError("Provider not supported for Inline Mode")

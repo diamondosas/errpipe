@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"errpipe/internal/ai/free"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -20,24 +19,9 @@ func init() {
 	go FetchModels()
 }
 
+var ModelsPath string
 // FetchModels fetches the models from pantry or loads them from the local app data folder cache.
 func FetchModels() {
-	// Get the path to models.json in user's config directory
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return
-	}
-	errpipeDir := filepath.Join(configDir, "errpipe")
-	modelsPath := filepath.Join(errpipeDir, "models.json")
-
-	// Try to load cached models first so they are immediately available
-	if data, err := os.ReadFile(modelsPath); err == nil {
-		var cachedModels []string
-		if err := json.Unmarshal(data, &cachedModels); err == nil && len(cachedModels) > 0 {
-			free.Models = cachedModels
-		}
-	}
-
 	// Make HTTP request with timeout to fetch fresh models
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get("https://getpantry.cloud/apiv1/public/ec41d9bde014139aa3de25a72a090a89")
@@ -72,12 +56,28 @@ func FetchModels() {
 	}
 
 	// Update free.Models and save to cache file
-	free.Models = models
+	GEMINI_MODELS = models
 
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return
+	}
+	errpipeDir := filepath.Join(configDir, "errpipe")
+	ModelsPath := filepath.Join(errpipeDir, "models.json")
 	// Ensure directory exists
 	_ = os.MkdirAll(errpipeDir, 0755)
 
 	if cachedData, err := json.Marshal(models); err == nil {
-		_ = os.WriteFile(modelsPath, cachedData, 0644)
+		_ = os.WriteFile(ModelsPath, cachedData, 0644)
+	}
+}
+
+func GetModels(){
+	// Try to load cached models first so they are immediately available
+	if data, err := os.ReadFile(ModelsPath); err == nil {
+		var cachedModels []string
+		if err := json.Unmarshal(data, &cachedModels); err == nil && len(cachedModels) > 0 {
+			GEMINI_MODELS = cachedModels
+		}
 	}
 }
