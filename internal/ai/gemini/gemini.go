@@ -23,6 +23,6 @@ func Stream(ctx context.Context, apikey, MODEL_ID string, errorMessage string) (
 
 	return goai.StreamText(ctx, model,
 		goai.WithSystem("Respond in the shortest way possible with direct actionable fixes to the issue and explaining why the issue happend in a simple manner. No fluff"),
-		
+		goai.WithPrompt(errorMessage),
 	)
 }

@@ -31,18 +31,23 @@ func HandleStream(ctx context.Context, errormsg string, config cli.Config) {
 	var stream *goai.TextStream
 	var err error
 
+	// Fix 2: Guard — models must be loaded before proceeding
 	GEMINI_MODELS = GetModels()
+	if len(GEMINI_MODELS) == 0 {
+		PrintError("No models available. Please wait a moment for models to load and try again.")
+		return
+	}
+
 	spinner := StartSpinner()
-	
+
 	switch config.Provider {
 	case "Gemini":
-		for _, model := range GEMINI_MODELS{
+		for _, model := range GEMINI_MODELS {
 			stream, err = gemini.Stream(ctx, config.APIKey, model, errormsg)
-			if err == nil{
+			if err == nil {
 				break
-			}else{
-				fmt.Println("Could not Generate", err)
 			}
+			fmt.Printf("Model %s failed: %v\n", model, err)
 		}
 	default:
 		spinner.Stop()
@@ -54,6 +59,12 @@ func HandleStream(ctx context.Context, errormsg string, config cli.Config) {
 
 	if err != nil {
 		PrintError(fmt.Sprintf("Error initializing AI stream: %v", err))
+		return
+	}
+
+	// Fix 1: Guard — stream must not be nil before use
+	if stream == nil {
+		PrintError("Failed to start AI stream: all models were exhausted.")
 		return
 	}
 
