@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"time"
-	"bytes"
-
 )
 
 // PantryData represents the JSON structure from the pantry server
@@ -24,11 +22,12 @@ func init() {
 
 var ModelsPath string
 var response Response
+
 // FetchModels fetches the models from pantry or loads them from the local app data folder cache.
 func FetchModels() {
 	// Make HTTP request with timeout to fetch fresh models
-	req, err := http.NewRequest("GET", "https://api.jsonbin.io/v3/b/6a71cf20da38895dfeb80b24?meta=false ", bytes.NewBuffer(modelsjson))
-	if err != nil{
+	req, err := http.NewRequest("GET", "https://api.jsonbin.io/v3/b/6a71cf20da38895dfeb80b24?meta=false ", nil)
+	if err != nil {
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -36,26 +35,25 @@ func FetchModels() {
 	//Dont bother trying to Hack Because it is a Read Only Access Key
 	req.Header.Set("X-Access-Key", "$2a$10$SYI3HJT7Xi1z6siLVLP2Pec0cHhNJIqvKPVNkZcWEMWp8J9EQ6HD6")
 
-	cli := &http.Client{Timeout : 10 * time.Second}
+	cli := &http.Client{Timeout: 10 * time.Second}
 	resp, err := cli.Do(req)
-	if err != nil{
+	if err != nil {
 		return
 	}
 
-	if resp.StatusCode == 200{
+	if resp.StatusCode == 200 {
 		body, err := io.ReadAll(resp.Body)
-		if err != nil{
+		if err != nil {
 			return
 		}
-		
+
 		err = json.Unmarshal(body, &response)
-		if err != nil{
+		if err != nil {
 			return
 		}
 	}
 	var models []string
 	models = append(models, response.One, response.Two, response.Three)
-	fmt.Println(models)
 
 	configDir, err := os.UserConfigDir()
 	if err != nil {
@@ -71,7 +69,7 @@ func FetchModels() {
 	}
 }
 
-func GetModels() ([]string) {
+func GetModels() []string {
 	// Try to load cached models first so they are immediately available
 	if data, err := os.ReadFile(ModelsPath); err == nil {
 		var cachedModels []string
@@ -79,4 +77,5 @@ func GetModels() ([]string) {
 			return cachedModels
 		}
 	}
+	return nil
 }
