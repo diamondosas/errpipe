@@ -9,7 +9,6 @@ import (
 // Config represents the application configuration
 type Config struct {
 	Provider string `json:"provider"`
-	Mode     string `json:"mode"`
 	APIKey   string `json:"api_key"`
 }
 

@@ -41,18 +41,17 @@ func main(){
 		// Check if config exists
 		config, err := cli.LoadConfig()
 		if err != nil {
-			config = cli.Config{
+		config = cli.Config{
 				Provider: "Free",
-				Mode:     "Inline CLI Mode",
 			}
-			fmt.Println("No configuration found. Using default Free Mode (Inline).")
+			fmt.Println("No configuration found. Using default Free Mode.")
 			fmt.Println("Run 'errpipe --init' to change this setup.")
 			fmt.Println()
 		}
 
 		// fmt.Println(INTRO)
 		// fmt.Printf("Using: %s (%s)\n", config.Provider, config.Mode)
-		utils.PrintWelcome(config.Provider, config.Mode)
+		utils.PrintWelcome(config.Provider)
 		
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)

@@ -56,7 +56,7 @@ func (s *Spinner) Stop() {
 }
 
 // PrintWelcome displays the initial banner with ANSI colors and formatting.
-func PrintWelcome(provider, mode string) {
+func PrintWelcome(provider string) {
 	banner := []string{
 		`███████╗██████╗ ██████╗ ██████╗ ██╗██████╗ ███████╗`,
 		`██╔════╝██╔══██╗██╔══██╗██╔══██╗██║██╔══██╗██╔════╝`,
@@ -73,7 +73,7 @@ func PrintWelcome(provider, mode string) {
 	fmt.Println()
 	fmt.Println("\t" + Fg(82) + Bold() + "» ERROR PIPE STARTED" + ResetStr())
 	fmt.Println("\t" + Dim() + "Type 'errpipe --init' to setup application" + ResetStr())
-	fmt.Printf("\t"+Fg(226)+"Using: %s (%s)\n\n"+ResetStr(), provider, mode)
+	fmt.Printf("\t"+Fg(226)+"Using: %s\n\n"+ResetStr(), provider)
 }
 
 // PrintPrompt prints the directory path prompt with ANSI styling.

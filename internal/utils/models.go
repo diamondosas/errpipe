@@ -26,7 +26,7 @@ var response Response
 // FetchModels fetches the models from pantry or loads them from the local app data folder cache.
 func FetchModels() {
 	// Make HTTP request with timeout to fetch fresh models
-	req, err := http.NewRequest("GET", "https://api.jsonbin.io/v3/b/6a71cf20da38895dfeb80b24?meta=false ", nil)
+	req, err := http.NewRequest("GET", "https://api.jsonbin.io/v3/b/6a71cf20da38895dfeb80b24?meta=false", nil)
 	if err != nil {
 		return
 	}
@@ -41,26 +41,27 @@ func FetchModels() {
 		return
 	}
 
-	if resp.StatusCode == 200 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return
-		}
-
-		err = json.Unmarshal(body, &response)
-		if err != nil {
-			return
-		}
+	if resp.StatusCode != 200 {
+		return
 	}
-	var models []string
-	models = append(models, response.One, response.Two, response.Three)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(body, &response); err != nil {
+		return
+	}
+
+	models := []string{response.One, response.Two, response.Three}
 
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return
 	}
 	errpipeDir := filepath.Join(configDir, "errpipe")
-	ModelsPath := filepath.Join(errpipeDir, "models.json")
+	ModelsPath = filepath.Join(errpipeDir, "models.json")
 	// Ensure directory exists
 	_ = os.MkdirAll(errpipeDir, 0755)
 

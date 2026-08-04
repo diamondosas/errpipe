@@ -18,7 +18,7 @@ func InitApp() {
 	// First question: Choose Provider
 	providerQuestion := &survey.Select{
 		Message: "Choose an AI provider:",
-		Options: []string{"Free", "Gemini", "Claude", "ChatGPT"},
+		Options: []string{"Gemini", "Ollama"},
 	}
 
 	err = survey.AskOne(providerQuestion, &config.Provider)
@@ -27,8 +27,6 @@ func InitApp() {
 		return
 	}
 
-	// Mode is always Inline CLI Mode
-	config.Mode = "Inline CLI Mode"
 
 	// Ask for API Key if provider is not Free
 	if config.Provider != "Free" {
@@ -47,6 +45,6 @@ func InitApp() {
 	if err != nil {
 		fmt.Printf("Error saving configuration: %v\n", err)
 	} else {
-		fmt.Printf("\n✓ Configuration Saved: %s (Inline CLI Mode)\n", config.Provider)
+		fmt.Printf("\n✓ Configuration Saved: %s\n", config.Provider)
 	}
 }
