@@ -55,13 +55,24 @@ function initCopy() {
     document.querySelectorAll('.copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const text = btn.getAttribute('data-copy');
+            const labelSpan = btn.querySelector('span');
             navigator.clipboard.writeText(text).then(() => {
-                const originalText = btn.innerText;
-                btn.innerText = "Copied!";
+                const originalLabel = labelSpan ? labelSpan.innerText : btn.innerText;
+                if (labelSpan) {
+                    labelSpan.innerText = "Copied!";
+                } else {
+                    btn.innerText = "Copied!";
+                }
                 btn.style.backgroundColor = "#10b981";
+                btn.style.borderColor = "#10b981";
                 setTimeout(() => {
-                    btn.innerText = originalText;
+                    if (labelSpan) {
+                        labelSpan.innerText = originalLabel;
+                    } else {
+                        btn.innerText = originalLabel;
+                    }
                     btn.style.backgroundColor = "";
+                    btn.style.borderColor = "";
                 }, 2000);
             });
         });

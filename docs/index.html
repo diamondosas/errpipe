@@ -84,24 +84,125 @@
 
     <main class="container">
         <section id="install" class="installation">
-            <h2 style="text-align: center; margin-bottom: 2rem;">Get Started in Seconds</h2>
-            
-            <div class="tabs" role="tablist">
-                <button class="tab-link active" role="tab" aria-selected="true" aria-controls="windows-panel" id="windows-tab">Windows</button>
-                <button class="tab-link" role="tab" aria-selected="false" aria-controls="unix-panel" id="unix-tab">macOS / Linux</button>
+            <div class="section-header">
+                <h2>Get Started in Seconds</h2>
+                <p class="section-subtitle">Select your operating system and preferred shell environment</p>
             </div>
+            
+            <div class="install-card">
+                <div class="tabs" role="tablist" aria-label="Installation Shell Selection">
+                    <button class="tab-link active" role="tab" aria-selected="true" aria-controls="pwsh-panel" id="pwsh-tab">
+                        <svg class="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-5-6-5M12 19h8"/></svg>
+                        PowerShell (Windows)
+                    </button>
+                    <button class="tab-link" role="tab" aria-selected="false" aria-controls="cmd-panel" id="cmd-tab">
+                        <svg class="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8l4 4-4 4M13 16h4"/></svg>
+                        CMD (Windows)
+                    </button>
+                    <button class="tab-link" role="tab" aria-selected="false" aria-controls="macos-panel" id="macos-tab">
+                        <svg class="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17l6-5-6-5M12 19h8"/></svg>
+                        macOS / Linux (zsh / bash)
+                    </button>
+                    <button class="tab-link" role="tab" aria-selected="false" aria-controls="source-panel" id="source-tab">
+                        <svg class="tab-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        From Source
+                    </button>
+                </div>
 
-            <div id="windows-panel" class="tab-content show" role="tabpanel" aria-labelledby="windows-tab">
-                <div class="code-block">
-                    <code>irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex</code>
-                    <button class="copy-btn" data-copy="irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex">Copy</button>
+                <!-- Windows PowerShell Panel -->
+                <div id="pwsh-panel" class="tab-content show" role="tabpanel" aria-labelledby="pwsh-tab">
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="shell-badge pwsh-badge">PowerShell</span>
+                            <span class="os-label">Windows (PowerShell 5.1+ / pwsh)</span>
+                        </div>
+                        <div class="code-block">
+                            <code><span class="prompt-symbol">PS&gt;</span> irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex</code>
+                            <button class="copy-btn" data-copy="irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="install-tip">💡 Open Windows PowerShell or PowerShell Core and run the command above to install automatically.</p>
+                </div>
+
+                <!-- Windows CMD Panel -->
+                <div id="cmd-panel" class="tab-content" role="tabpanel" aria-labelledby="cmd-tab" hidden>
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="shell-badge cmd-badge">CMD</span>
+                            <span class="os-label">Windows Command Prompt (cmd.exe)</span>
+                        </div>
+                        <div class="code-block">
+                            <code><span class="prompt-symbol">C:\&gt;</span> powershell -Command "irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex"</code>
+                            <button class="copy-btn" data-copy="powershell -Command &quot;irm https://github.com/diamondosas/errpipe/releases/download/vlatest/install.ps1 | iex&quot;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="install-tip">💡 Run directly in classic Command Prompt (<code>cmd.exe</code>) by executing PowerShell in non-interactive mode.</p>
+                </div>
+
+                <!-- macOS / Linux Panel -->
+                <div id="macos-panel" class="tab-content" role="tabpanel" aria-labelledby="macos-tab" hidden>
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="shell-badge unix-badge">zsh / bash</span>
+                            <span class="os-label">macOS Terminal &amp; Linux</span>
+                        </div>
+                        <div class="code-block">
+                            <code><span class="prompt-symbol">$</span> curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh</code>
+                            <button class="copy-btn" data-copy="curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="install-tip">💡 Default shell on macOS (<code>zsh</code>) and Linux (<code>bash</code>). Uses <code>curl</code> and <code>sh</code> to install instantly.</p>
+                </div>
+
+                <!-- From Source Panel -->
+                <div id="source-panel" class="tab-content" role="tabpanel" aria-labelledby="source-tab" hidden>
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="shell-badge go-badge">Go 1.21+</span>
+                            <span class="os-label">Cross-platform (Compile from Source)</span>
+                        </div>
+                        <div class="code-block">
+                            <code><span class="prompt-symbol">$</span> git clone https://github.com/diamondosas/errpipe.git &amp;&amp; cd errpipe &amp;&amp; go build -o errpipe</code>
+                            <button class="copy-btn" data-copy="git clone https://github.com/diamondosas/errpipe.git &amp;&amp; cd errpipe &amp;&amp; go build -o errpipe">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="install-tip">💡 Compile the Go binary yourself on any system with Go installed.</p>
                 </div>
             </div>
 
-            <div id="unix-panel" class="tab-content" role="tabpanel" aria-labelledby="unix-tab" hidden>
-                <div class="code-block">
-                    <code>curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh</code>
-                    <button class="copy-btn" data-copy="curl -fsSL https://github.com/diamondosas/errpipe/releases/download/vlatest/install.sh | sh">Copy</button>
+            <div class="quickstart-steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Install</h4>
+                        <p>Paste &amp; run the command for your OS shell environment.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Launch</h4>
+                        <p>Type <code>errpipe</code> in your shell to start monitoring.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Debug</h4>
+                        <p>Run your commands normally. AI fixes appear automatically when errors occur.</p>
+                    </div>
                 </div>
             </div>
         </section>
