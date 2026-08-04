@@ -18,7 +18,7 @@ import (
 // }
 
 
-func Stream(ctx context.Context, apikey, errorMessage string) (*goai.TextStream, error){
+func Stream(ctx context.Context, apikey, MODEL_ID string, errorMessage string) (*goai.TextStream, error){
 	model := google.Chat(MODEL_ID, google.WithAPIKey(apikey))
 
 	return goai.StreamText(ctx, model,

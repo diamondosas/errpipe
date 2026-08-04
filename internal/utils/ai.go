@@ -12,7 +12,7 @@ var GEMINI_MODELS []string
 
 func SendToAI(ctx context.Context, errormsg string, config cli.Config) {
 	// Validate API Key for Inline CLI Mode, unless it's Free mode
-	if config.APIKey == "" && config.Provider != "Free" {
+	if config.APIKey == ""{
 		PrintError("API Key is required. Please run 'errpipe --init' to configure it.")
 		return
 	}
@@ -31,11 +31,20 @@ func HandleInline(ctx context.Context, errormsg string, config cli.Config) {
 	var stream *goai.TextStream
 	var err error
 
+	GEMINI_MODELS = GetModels()
 	spinner := StartSpinner()
-
+	
 	switch config.Provider {
 	case "Gemini":
-		
+		for _, model := range GEMINI_MODELS{
+			stream, err = gemini.Stream(ctx, config.APIKey, model, errormsg)
+			if err == nil{
+				break
+			}
+			if err != nil{
+				fmt.Println("Could not Generate", err)
+			}
+		}
 	default:
 		spinner.Stop()
 		PrintError("Provider not supported for Inline Mode")

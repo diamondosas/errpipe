@@ -2,14 +2,17 @@ package utils
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+	"bytes"
+
 )
 
 // PantryData represents the JSON structure from the pantry server
-type PantryData struct {
+type Response struct {
 	One   string `json:"1"`
 	Two   string `json:"2"`
 	Three string `json:"3"`
@@ -20,43 +23,39 @@ func init() {
 }
 
 var ModelsPath string
+var response Response
 // FetchModels fetches the models from pantry or loads them from the local app data folder cache.
 func FetchModels() {
 	// Make HTTP request with timeout to fetch fresh models
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Get("https://getpantry.cloud/apiv1/public/ec41d9bde014139aa3de25a72a090a89")
-	if err != nil {
+	req, err := http.NewRequest("GET", "https://api.jsonbin.io/v3/b/6a71cf20da38895dfeb80b24?meta=false ", bytes.NewBuffer(modelsjson))
+	if err != nil{
 		return
 	}
-	defer resp.Body.Close()
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Master-Key", "$2a$10$NxHQ2PNwBeufrft4HlJTGOSJ4UTV.8T9da3RrE3cGbU3aVwtwR2gu")
+	//Dont bother trying to Hack Because it is a Read Only Access Key
+	req.Header.Set("X-Access-Key", "$2a$10$SYI3HJT7Xi1z6siLVLP2Pec0cHhNJIqvKPVNkZcWEMWp8J9EQ6HD6")
 
-	if resp.StatusCode != 200 {
+	cli := &http.Client{Timeout : 10 * time.Second}
+	resp, err := cli.Do(req)
+	if err != nil{
 		return
 	}
 
-	var pData PantryData
-	if err := json.NewDecoder(resp.Body).Decode(&pData); err != nil {
-		return
+	if resp.StatusCode == 200{
+		body, err := io.ReadAll(resp.Body)
+		if err != nil{
+			return
+		}
+		
+		err = json.Unmarshal(body, &response)
+		if err != nil{
+			return
+		}
 	}
-
-	// Construct models list from pantry data
 	var models []string
-	if pData.One != "" {
-		models = append(models, pData.One)
-	}
-	if pData.Two != "" {
-		models = append(models, pData.Two)
-	}
-	if pData.Three != "" {
-		models = append(models, pData.Three)
-	}
-
-	if len(models) == 0 {
-		return
-	}
-
-	// Update free.Models and save to cache file
-	GEMINI_MODELS = models
+	models = append(models, response.One, response.Two, response.Three)
+	fmt.Println(models)
 
 	configDir, err := os.UserConfigDir()
 	if err != nil {
@@ -72,12 +71,12 @@ func FetchModels() {
 	}
 }
 
-func GetModels(){
+func GetModels() ([]string) {
 	// Try to load cached models first so they are immediately available
 	if data, err := os.ReadFile(ModelsPath); err == nil {
 		var cachedModels []string
 		if err := json.Unmarshal(data, &cachedModels); err == nil && len(cachedModels) > 0 {
-			GEMINI_MODELS = cachedModels
+			return cachedModels
 		}
 	}
 }
