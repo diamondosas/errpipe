@@ -7,22 +7,20 @@ import (
 	"github.com/zendev-sh/goai/provider/google"
 )
 
-// Stream starts a streaming session with Gemini using GoAI
-// func Stream(ctx context.Context, apiKey, errorMessage string) (*goai.TextStream, error) {
-// 	model := google.Chat("gemini-3.1-flash-lite", google.WithAPIKey(apiKey))
-
-// 	return goai.StreamText(ctx, model,
-// 		goai.WithSystem("You are an expert developer assistant. Respond in the shortest way possible with direct actionable fixes to the issue. No fluff"),
-// 		goai.WithPrompt(errorMessage),
-// 	)
-// }
-
+var GENERAL_INSTRUCTION = "Respond as short as possible with direct actionable fixes and a brief reason why. No fluff."
+var FORMATTING_INSTRUCTION = "Format your response using markdown for readability:\n" +
+	"- Wrap ALL code in fenced code blocks with a language tag (e.g. ```go).\n" +
+	"- Use **bold** to highlight important terms, flags, or key concepts.\n" +
+	"- Use `inline code` for short identifiers, filenames, or values inline with text.\n" +
+	"- Use bullet lists for steps or multiple points.\n" +
+	"- Do NOT use headers (#). Keep prose concise."
+var SYSTEM_PROMPT = "Instruction: " + GENERAL_INSTRUCTION + "\nFormatting: " + FORMATTING_INSTRUCTION
 
 func Stream(ctx context.Context, apikey, MODEL_ID string, errorMessage string) (*goai.TextStream, error){
 	model := google.Chat(MODEL_ID, google.WithAPIKey(apikey))
 
 	return goai.StreamText(ctx, model,
-		goai.WithSystem("Respond in the shortest way possible with direct actionable fixes to the issue and explaining why the issue happend in a simple manner. No fluff"),
+		goai.WithSystem(SYSTEM_PROMPT),
 		goai.WithPrompt(errorMessage),
 	)
 }

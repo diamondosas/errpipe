@@ -68,9 +68,9 @@ func HandleStream(ctx context.Context, errormsg string, config cli.Config) {
 		return
 	}
 
-	fmt.Printf("\n\n%s%s--- AI Analysis ---%s\n", Fg(51), Bold(), ResetStr())
+	fmt.Printf("\n\n%s%s---Error Analysis ---%s\n", Fg(51), Bold(), ResetStr())
 	StreamWithHighlighting(ctx, stream.TextStream())
-	fmt.Printf("\n\n%s%s-------------------%s\n\n", Fg(51), Bold(), ResetStr())
+	fmt.Printf("\n%s%s-------------------%s\n\n", Fg(51), Bold(), ResetStr())
 
 	if err := stream.Err(); err != nil {
 		PrintError(fmt.Sprintf("Stream error occurred: %v", err))

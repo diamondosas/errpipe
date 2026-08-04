@@ -4,6 +4,7 @@ import (
 	"context"
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/alecthomas/chroma/v2/quick"
@@ -31,7 +32,7 @@ func StreamWithHighlighting(ctx context.Context, stream <-chan string) {
 					highlightAndPrintCode(codeBuffer, lang)
 				} else {
 					if len(textBuffer) > 0 {
-						fmt.Print(Fg(255) + textBuffer + ResetStr())
+						fmt.Print(formatInlineMarkdown(textBuffer))
 					}
 				}
 				return
@@ -46,7 +47,7 @@ func StreamWithHighlighting(ctx context.Context, stream <-chan string) {
 						// Safe to print everything EXCEPT the last 2 characters (in case they are part of an incoming "```")
 						safeLen := len(textBuffer) - 2
 						if safeLen > 0 {
-							fmt.Print(Fg(255) + textBuffer[:safeLen] + ResetStr())
+							fmt.Print(formatInlineMarkdown(textBuffer[:safeLen]))
 							textBuffer = textBuffer[safeLen:]
 						}
 						break // Break to wait for more chunks
@@ -54,7 +55,7 @@ func StreamWithHighlighting(ctx context.Context, stream <-chan string) {
 
 					// Print everything before ```
 					if idx > 0 {
-						fmt.Print(Fg(255) + textBuffer[:idx] + ResetStr())
+						fmt.Print(formatInlineMarkdown(textBuffer[:idx]))
 					}
 					textBuffer = textBuffer[idx+3:]
 
@@ -100,6 +101,70 @@ func StreamWithHighlighting(ctx context.Context, stream <-chan string) {
 			}
 		}
 	}
+}
+
+// formatInlineMarkdown applies ANSI styling for inline markdown produced by the AI:
+//   - ***text***  → bold + italic
+//   - **text**    → bold
+//   - *text*      → italic
+//   - `text`      → cyan  (inline code)
+//   - - item / * item → styled bullet point
+//
+// Patterns are applied in specificity order (most specific first) to avoid
+// partial matches (e.g. *** being confused with **).
+var (
+	reBoldItalic = regexp.MustCompile(`\*{3}([^*]+)\*{3}`)
+	reBold       = regexp.MustCompile(`\*{2}([^*]+)\*{2}`)
+	reItalic     = regexp.MustCompile(`\*([^*\n]+)\*`)
+	reInlineCode = regexp.MustCompile("`([^`\n]+)`")
+)
+
+// ansi escape helpers
+const (
+	ansiBold      = "\033[1m"
+	ansiItalic    = "\033[3m"
+	ansiCyan      = "\033[36m"
+	ansiDim       = "\033[2m"
+	ansiReset     = "\033[0m"
+)
+
+func formatInlineMarkdown(s string) string {
+	// Process line-by-line so bullet detection is scoped correctly
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+
+		// Detect bullet list items: lines starting with "- " or "* " (but not "**")
+		isBullet := (strings.HasPrefix(trimmed, "- ") || strings.HasPrefix(trimmed, "* ")) &&
+			!strings.HasPrefix(trimmed, "**")
+		if isBullet {
+			// Replace the leading "- " / "* " with a styled bullet glyph
+			rest := trimmed[2:]
+			line = ansiReset + Fg(240) + "  •" + ansiReset + " " + rest
+		}
+
+		// Apply inline patterns in specificity order
+		line = reBoldItalic.ReplaceAllStringFunc(line, func(m string) string {
+			inner := reBoldItalic.FindStringSubmatch(m)[1]
+			return ansiReset + ansiBold + ansiItalic + inner + ansiReset
+		})
+		line = reBold.ReplaceAllStringFunc(line, func(m string) string {
+			inner := reBold.FindStringSubmatch(m)[1]
+			return ansiReset + ansiBold + inner + ansiReset
+		})
+		line = reItalic.ReplaceAllStringFunc(line, func(m string) string {
+			inner := reItalic.FindStringSubmatch(m)[1]
+			return ansiReset + ansiItalic + inner + ansiReset
+		})
+		line = reInlineCode.ReplaceAllStringFunc(line, func(m string) string {
+			inner := reInlineCode.FindStringSubmatch(m)[1]
+			return ansiReset + ansiCyan + inner + ansiReset
+		})
+
+		lines[i] = line
+	}
+
+	return Fg(255) + strings.Join(lines, "\n") + ResetStr()
 }
 
 // highlightAndPrintCode formats the buffered code block and syntax highlights it.
