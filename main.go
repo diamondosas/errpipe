@@ -29,14 +29,14 @@ import (
 /* PROCESS
  * Check whether
  */
- 
-// var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== " 
- 
+
+// var INTRO string = "==============================================\n 	    ERROR PIPE STARTED \n 	 Type 'errpipe --init' to setup application 	 \n============================================== "
+
 func main(){
 	utils.EnableANSI()
-	
+
 	ok := initFlags()
-	
+
 	if ok{
 		// Check if config exists
 		config, err := cli.LoadConfig()
@@ -52,7 +52,7 @@ func main(){
 		// fmt.Println(INTRO)
 		// fmt.Printf("Using: %s (%s)\n", config.Provider, config.Mode)
 		utils.PrintWelcome(config.Provider)
-		
+
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
@@ -68,7 +68,7 @@ func main(){
 				inputChan <- strings.TrimSpace(line)
 			}
 		}()
-		
+
 		printPrompt := func() {
 			dir, err := os.Getwd()
 			if err != nil{
@@ -116,12 +116,12 @@ func main(){
 			}
 		}
 	}
-	
+
 }
 
 func initFlags() bool{
 	help := flag.Bool("help", false, "Print out Help Command")
-	init := flag.Bool("init", false ,"Setup the Application")	
+	init := flag.Bool("init", false ,"Setup the Application")
 	flag.Parse()
 	if *help{
 		printHelp()
@@ -131,29 +131,29 @@ func initFlags() bool{
 		cli.InitApp()
 		return false
 	}
-	
+
 	return true
 }
 func runCmd(input string) (string, bool) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows"{
 		// err := exec.Command("powershell", "-command", "$PSVersionTable").Run()
-		// if err != nil{ 
+		// if err != nil{
 			cmd = exec.Command("cmd", "/C", input)
 			// fmt.Println("Cmd")
-		// }else{ 
+		// }else{
 		// 	cmd = exec.Command("powershell", "-c", input)
 		// 	fmt.Println("Power")
 		// }
 	} else{ //Macos & Linux
 		cmd = exec.Command("sh", "-c", input)
 	}
-	
+
 	var stderrBuf bytes.Buffer
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 	cmd.Stdin = os.Stdin
-	
+
 	err := cmd.Run()
 	if err != nil{
 		return stderrBuf.String(), true
@@ -191,4 +191,3 @@ func printHelp(){
 // 		return true
 // 	}
 // }
-
